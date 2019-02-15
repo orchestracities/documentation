@@ -23,6 +23,9 @@ with the following variables:
 
 ## User Management
 
+A specific interface for user management is under development. Meanwhile, 
+user management is done directly within Keycloak, the OrchestraCities auth provider.
+
 ### Create a user
 
 To create a new user, log into [Keycloak's admin UI][2].
@@ -92,6 +95,10 @@ by selecting the Group they belong to and clicking "Leave".
 ![](rsrc/auth/keycloak_group_membership.png)
 
 ### User API Authentication
+
+With the following token you will be able to authenticate to OC APIs.
+The cloud hosted platform at the time being requires a `client_secret`, which
+you need to obtain from OrchestraCities team.
 
 1. Obtain a token with your email and password:
 
@@ -214,17 +221,71 @@ get your `apiKey` from the *subscription* part of the left menu.
 
 ### Register a device using APIs
 
-In order to receive and store the data that is dispatched from the importers,
-first you need to register the device in the IoT Agent. For that, you need to
-create the service groups and the devices.
+In order to receive data from the devices, first you need to register the device
+in the IoT Agent. For that, you need to create the device groups and the devices.
+Device Groups are a simple way to provide a shared configuration among different
+devices (also across multiple `protocols`).
 
-#### Service groups Operations
+First of all you should pick one of the `protocols` available in the platform.
+You can query them using:
+
+    curl --request GET \
+      --url https://api.s.orchestracities.com/iot/config/protocols/ \
+      --header 'Authorization: Bearer {{token}}' \
+      --header 'Content: application/json'
+
+The response will look like:
+
+```
+{
+    "count": 3,
+    "protocols": [
+        {
+            "__v": 0,
+            "_id": "5aa28f51bf77b0d245058c35",
+            "description": "OMA LWM2M IoT Agent COAP protocol (Node.js version)",
+            "protocol": "COAP",
+            "resource": "/iot/d"
+        },
+        {
+            "__v": 0,
+            "_id": "5c6715da1794d4000e790d82",
+            "description": "Ultralight 2.0 IoT Agent (Node.js version) supports HTTP/MQTT/AMQP protocols",
+            "protocol": "UL",
+            "resource": "/iot/ul"
+        },
+        {
+            "__v": 0,
+            "_id": "5c671c811794d4000e790dbf",
+            "description": "JSON IoT Agent (Node.js version) supports HTTP/MQTT/AMQP protocols",
+            "protocol": "JSON",
+            "resource": "/iot/json"
+        }
+    ]
+}
+```
+
+In the following we use the UL Agent as example. Similarly you will be able
+to use other available protocols. Be aware that the OC cloud instance, compared
+to official FIWARE IoT Agents, poses some restrictions:
+
+* Device Group `key` is automatically computed, thus, if you inject it, it will
+  be replaced.
+* Resource is automatically computed as well, based on the `protocol` selected,
+  e.g. for `UL` protocol, the resource would be `/iot/ul`.
+* In the cloud platform, `cbroker` is not supported, since the platform allows
+  agents to communicate only with the context broker offered by the platform.
+
+#### Device Groups Operations
+
+To interact with a specific protocol, you will need to used the `protocol`
+parameter to every call.
 
 ##### 1. Create
 
 ```
 curl -X POST \
-  https://api.s.orchestracities.com/iot/config/config/iot/services \
+  https://api.s.orchestracities.com/iot/config/services?protocol=UL \
   -H 'Authorization: Bearer {{token}}' \
   -H 'Cache-Control: no-cache' \
   -H 'Content-Type: application/json' \
@@ -234,103 +295,145 @@ curl -X POST \
   -d '{
 	"services": [
 	   {
-	     "cbroker":     "https://orion.wolfsburg.digital/v2/op/update/",
 	     "entity_type": "WasteContainer",
-	     "resource":    "/iot/ul"
+       "internal_attributes": [],
+       "attributes": [
+           {
+               "type": "Number",
+               "name": "temperature",
+               "object_id": "t"
+           },
+           {
+               "type": "geo:point",
+               "name": "location",
+               "object_id": "l"
+           },
+           {
+               "type": "Text",
+               "name": "description",
+               "object_id": "d"
+           },
+           {
+               "type": "Text",
+               "name": "status",
+               "object_id": "S"
+           },
+           {
+               "type": "Number",
+               "name": "proximity",
+               "object_id": "p"
+           },
+           {
+               "expression": "${(@deviceHeight - @proximity) / @deviceHeight}",
+               "type": "Number",
+               "name": "fillingLevel",
+               "object_id": "fillingLevel"
+           }
+       ],
+       "lazy": [],
+       "static_attributes": [
+           {
+               "value": "160",
+               "type": "Number",
+               "name": "deviceHeight"
+           },
+           {
+               "name": "simulated",
+               "type": "Boolean",
+               "value": "false"
+           }
+       ],
+       "commands": []
 	   }
 	]
 }'
 ```
 
-This request creates the service group for the Waste devices. For the Parking
+This request creates the Device Group for the Waste devices. For the Parking
 devices you must update the value of `entity_type` to `ParkingSpot` and the
 `Fiware-ServicePath` to `ParkingManagement`.
 
 ##### 2. Update
+To update a Service Group, you need to know its key:
 
 ```
 curl -iX PUT \
-  'https://api.s.orchestracities.com/iot/config/config/iot/services?resource=/iot/ul' \
+  'https://api.s.orchestracities.com/iot/config/services?apikey=T3JjaGVzdHJhQ2l0aWVzOi9XYXN0ZU1hbmFnZW1lbnQ6V2FzdGVDb250YWluZXI6MQ==&protocol=UL' \
+  -H 'Authorization: Bearer {{token}}' \
+  -H 'Cache-Control: no-cache' \
   -H 'Content-Type: application/json' \
   -H 'Fiware-Service: OrchestraCities' \
   -H 'Fiware-ServicePath: /WasteManagement' \
+  -H 'X-Gravitee-Api-Key: {{X-Gravitee-Api-Key}}' \
   -d '{
   "entity_type": "WasteContainerUpdate"
 }'
 ```
 
 This request will update the value for the field `entity_type` for the service
-group with resource `resource=/iot/ul` for the specified `Fiware-Service` and
-`Fiware-ServicePath`.
+group with apikey `T3JjaGVzdHJhQ2l0aWVzOi9XYXN0ZU1hbmFnZW1lbnQ6V2FzdGVDb250YWluZXI6MQ==` for the specified `Fiware-Service` and `Fiware-ServicePath`.
 
 ##### 3. Delete
 
+Similarly, to delete a Device Group:
+
 ```
 curl -X DELETE \
-  'https://api.s.orchestracities.com/iot/config/config/iot/services/?resource=/iot/ul' \
+  'https://api.s.orchestracities.com/iot/config/services?apikey=T3JjaGVzdHJhQ2l0aWVzOi9XYXN0ZU1hbmFnZW1lbnQ6V2FzdGVDb250YWluZXI6MQ==&protocol=UL' \
+  -H 'Authorization: Bearer {{token}}' \
   -H 'Cache-Control: no-cache' \
   -H 'Fiware-Service: OrchestraCities' \
-  -H 'Fiware-ServicePath: /WasteManagement'
+  -H 'Fiware-ServicePath: /WasteManagement' \
+  -H 'X-Gravitee-Api-Key: {{X-Gravitee-Api-Key}}' \
 ```
-
-This request will delete the service group for the resource `resource=/iot/ul`
-for for the specified `Fiware-Service` and `Fiware-ServicePath`.
 
 More operations (and examples) related with the services groups can be found
 [here](https://github.com/Fiware/tutorials.IoT-Agent#service-group-crud-actions).
 
 #### Devices Operations
 
+Device creation works in a similar way. Devices are coupled to the Device Group,
+based on `Fiware-Service` and `Fiware-ServicePath` and `entity_type`.
+
 ##### 1. Create
 
 ```
 curl -X POST \
-  'https://api.s.orchestracities.com/iot/config/config/iot/devices \
+  'https://api.s.orchestracities.com/iot/config/devices?protocol=UL \
+  -H 'Authorization: Bearer {{token}}' \
   -H 'Cache-Control: no-cache' \
   -H 'Content-Type: application/json' \
   -H 'Fiware-Service: OrchestraCities' \
   -H 'Fiware-ServicePath: /WasteManagement' \
+  -H 'X-Gravitee-Api-Key: {{X-Gravitee-Api-Key}}' \
   -d '{
 	"devices": [
 	   {
 	     "device_id":   "waste001",
 	     "entity_name": "urn:ngsd-ld:Waste:001",
-	     "entity_type": "WasteContainer",
-	     "timezone":    "Europe/Lisbon",
-	     "attributes": [
-	       { "object_id": "l", "name": "location", "type": "geo:point" },
-         { "object_id": "ld", "name": "locationDescription", "type": "Text" },
-         { "object_id": "a", "name": "address", "type": "Text" },
-	       { "object_id": "t", "name": "temperature", "type": "Number"},
-	       { "object_id": "d", "name": "description", "type": "Text"},
-         { "object_id": "si", "name": "site", "type": "Text"},
-	       { "object_id": "S", "name": "status", "type": "Text"},
-         { "object_id": "swk", "name": "storedWasteKind", "type": "Text"},
-         { "object_id": "um", "name": "utm_e", "type": "Text"},
-         { "object_id": "swk", "name": "utm_n", "type": "Number"},
-	       { "object_id": "m", "name": "dateModified", "type": "DateTime"},
-         { "object_id": "dle", "name": "dateLastEmptying", "type": "DateTime"},
-	       { "object_id": "g", "name": "simulated", "type": "Boolean"},
-	       { "object_id": "p", "name": "proximity", "type": "Number"},
-	       { "name": "fillingLevel", "type": "Number", "expression": "${(@deviceHeight - @proximity) / @deviceHeight}"}
-
-	     ],
-	     "static_attributes": [
-	       { "name":"deviceHeight", "type": "Number", "value": 160}
-	     ]
+	     "entity_type": "WasteContainer"
 	   }
 	 ]
 }'
 ```
 
+It is recommended not to used name with spaces or weird characters,
+this may not be supported by orion or may be complex to query since will require
+you to used URI encoding.
+
 ##### 2. Update
+
+To update a device:
 
 ```
   curl -iX PUT \
-  'https://api.s.orchestracities.com/iot/config/config/iot/devices/waste001' \
+  'https://api.s.orchestracities.com/iot/config/devices/waste001?protocol=UL' \
+  -H 'Authorization: Bearer {{token}}' \
+  -H 'Cache-Control: no-cache' \
   -H 'Content-Type: application/json' \
   -H 'Fiware-Service: OrchestraCities' \
   -H 'Fiware-ServicePath: /WasteManagement' \
+  -H 'X-Gravitee-Api-Key: {{X-Gravitee-Api-Key}}' \
   -d '{
     "entity_type": "IoT-Device"
   }'
@@ -340,9 +443,11 @@ curl -X POST \
 
 ```
 curl -iX DELETE \
-  'https://api.s.orchestracities.com/iot/config/config/iot/devices/waste001' \
+  'https://api.s.orchestracities.com/iot/config/devices/waste001?protocol=UL' \
+  -H 'Authorization: Bearer {{token}}' \
   -H 'Fiware-Service: OrchestraCities' \
-  -H 'Fiware-ServicePath: /WasteManagement'
+  -H 'Fiware-ServicePath: /WasteManagement' \
+  -H 'X-Gravitee-Api-Key: {{X-Gravitee-Api-Key}}' \
 ```
 
 More operations (and examples) related with the devices can be found
@@ -501,8 +606,8 @@ groups).
     need to run many queries).
 
 1. With your `{{access_token}}` and your `{{apiKey}}`, you can list all
-entities in a given Tenant (fiware-Service) and Service Group
-(fiware-ServicePath):
+entities in a given Tenant (`fiware-Service`) and Service Group
+(`fiware-ServicePath`):
 
         curl --request GET \
           --url https://api.s.orchestracities.com/context/v2/entities \
@@ -512,8 +617,8 @@ entities in a given Tenant (fiware-Service) and Service Group
           --header 'Fiware-Service: OrchestraCities' \
           --header 'Fiware-ServicePath: /ParkingManagement'
 
-1. Or access a specific entity in a given Tenant (fiware-Service) and
-Service Group (fiware-ServicePath):
+1. Or access a specific entity in a given Tenant (`fiware-Service`) and
+Service Group (`fiware-ServicePath`):
 
         curl --request GET \
           --url https://api.s.orchestracities.com/context/v2/entities \
@@ -534,8 +639,8 @@ or its
     key if you need to run many queries).
 
 1. With your `{{access_token}}` and your `{{apiKey}}`, you can list all
-records of an entity attribute () in a given Tenant (fiware-Service) and
-Service Group (fiware-ServicePath):
+records of an entity attribute () in a given Tenant (`fiware-Service`) and
+Service Group (`fiware-ServicePath`):
 
         curl --request GET \
           --url https://api.s.orchestracities.com/context/v2/entities/urn:ngsi-ld:AirQualityObserved:lugano-2689/attrs/PM25?fromDate=2019-01-01T00:00:00&toDate=2019-03-01T00:00:00 \
