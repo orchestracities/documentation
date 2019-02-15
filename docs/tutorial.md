@@ -18,11 +18,58 @@ Back on the Users page, find the newly created User and click on it to bring up
 its details page. Under the groups tab, add the user to at least one tenant
 group for the Portal, in this case it should be "Wolfsburg".
 
-### Create Service Groups [Gabriele]
+### Create Service Groups
 
-### Create User Groups and Assign User Roles [Gabriele]
+From the Keycloak Admin UI, select "Groups" on the left sidebar. You'll be
+presented with a list of groups and subgroups. The root groups represent the
+tenants, while their subgroups are either Service Groups or User Groups.
 
-### Add users to User Groups or Service Groups [Gabriele]
+![](figures/keycloak_groups.png)
+
+To create a new Service Group for the "Wolfsburg" tenant, click on "Wolfsburg"
+(do not worry if it doesn't look like it's being highlighted), and then click
+"New" on the top right. Enter a name for the new Service Group and click "save".
+The new group should now appear under "Wolfsburg". In order to define it as a
+Service Group, click on it and then click 'edit' on the top right. On this new
+page, select the "Attributes" tab. From here, add two new attributes with keys
+"servicepath" and "servicePath", both with values set to "true". Make sure to
+click the "add" button on the right for each before clicking "save" at the
+bottom.
+
+![](figures/keycloak_attributes.png)
+
+### Create User Groups and Assign User Roles
+
+Creating User Groups is similar to creating Service Groups. Once again, go to
+the "Groups" page, click on "Wolfsburg" and then click "New". Enter a name for
+the new User Group, and click "save". Now click on the newly created group and
+then on "Edit". This time, select the "Role Mappings" tab. Here you will see
+a section for "Realm Roles", and a dropdown menu for "Client Roles". From that
+dropdown menu select "resource_server". This will bring up three lists for
+"Available Roles", "Assigned Roles", and "Effective Roles". You can select
+entries in either the "Available Roles" or the "Assigned Roles" to add or remove
+roles from this User Group, which include the ability to read, create, write
+(edit) or delete for Device, Device Groups, Entities and so on. Adding or
+removing Roles will automatically set those Roles to the group, no need to click
+on any save button this time.
+
+![](figures/keycloak_roles.png)
+
+### Add users to User Groups or Service Groups
+
+In order to give a User the Roles from the new User Group, and to give them
+permission for the new Service Group the User needs to become a member of those
+groups. To do this, select "Users" from the left sidebar. From this page, locate
+the User you want to alter by searching for its username, or click "View all
+users" and find it from the full list. Once found, click on their id on the
+leftmost column. On this new page, click on the "Groups" tab. You'll see a list
+Groups the User belongs to, and one of the available Groups for the User to join.
+Select the User Group and the Service Group you created under "Wolfsburg" and
+click on "Join". They should appear now under "Group Membership". The User is
+now member of those Groups. Removing a User from a Group can be done similarly
+by selecting the Group they belong to and clicking "Leave".
+
+![](figures/keycloak_group_membership.png)
 
 ### User API Authentication [Fede+Tomas]
 
