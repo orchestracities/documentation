@@ -1,0 +1,1687 @@
+{
+	"info": {
+		"_postman_id": "2bd7193a-ea58-3172-b821-e89c71d49d0f",
+		"name": "Orchestra API tests",
+		"description": "This collection test the protected access to Orchestra Cities APIs",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Auth API access",
+			"item": [
+				{
+					"name": "1. get token",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "82d5aac1-53ef-4aac-93d0-16c7d97e79c3",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "4901522f-b502-4680-82d6-35ff6d58476e",
+								"exec": [
+									"pm.test(\"Successful POST request\", function () {",
+									"    pm.environment.set(\"token\", pm.response.json().access_token);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "username",
+									"value": "{{username}}",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{password}}",
+									"type": "text"
+								},
+								{
+									"key": "grant_type",
+									"value": "password",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{client_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{client_secret}}",
+									"type": "text"
+								},
+								{
+									"key": "scope",
+									"value": "{{scope}}",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "https://{{server}}/protocol/openid-connect/token",
+							"protocol": "https",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"protocol",
+								"openid-connect",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2. Validate token",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "client_id",
+									"value": "{{client_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{client_secret}}",
+									"type": "text"
+								},
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://{{server}}/protocol/openid-connect/token/introspect",
+							"protocol": "https",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"protocol",
+								"openid-connect",
+								"token",
+								"introspect"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3. get userprofile",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "access_token",
+									"value": "{{token}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://{{server}}/protocol/openid-connect/userinfo",
+							"protocol": "https",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"protocol",
+								"openid-connect",
+								"userinfo"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "62e173a0-b39c-4e10-937a-ca264897bf6b",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "c7856f6a-c03a-4f27-9e85-513d9068fcda",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "2. Context Broker API read access",
+			"item": [
+				{
+					"name": "1. List entities",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content",
+								"value": "application/json"
+							},
+							{
+								"key": "fiware-Service",
+								"value": "{{service}}",
+								"type": "text"
+							},
+							{
+								"key": "fiware-ServicePath",
+								"value": "{{servicePath}}",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Gravitee-Api-Key",
+								"value": "{{X-Gravitee-Api-Key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://{{apiServer}}/context/v2/entities",
+							"protocol": "https",
+							"host": [
+								"{{apiServer}}"
+							],
+							"path": [
+								"context",
+								"v2",
+								"entities"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2. Get single entity",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "fiware-Service",
+								"value": "{{service}}",
+								"type": "text"
+							},
+							{
+								"key": "fiware-ServicePath",
+								"value": "{{servicePath}}",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Gravitee-Api-Key",
+								"value": "{{X-Gravitee-Api-Key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://{{apiServer}}/context/v2/entities/urn:ngsi-ld:WasteContainer:19",
+							"protocol": "https",
+							"host": [
+								"{{apiServer}}"
+							],
+							"path": [
+								"context",
+								"v2",
+								"entities",
+								"urn:ngsi-ld:WasteContainer:19"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3. List entities in not auth servicePath",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "fiware-Service",
+								"value": "{{service}}",
+								"type": "text"
+							},
+							{
+								"key": "fiware-ServicePath",
+								"value": "{{servicePath}}/Test",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Gravitee-Api-Key",
+								"value": "{{X-Gravitee-Api-Key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://{{apiServer}}/context/v2/entities",
+							"protocol": "https",
+							"host": [
+								"{{apiServer}}"
+							],
+							"path": [
+								"context",
+								"v2",
+								"entities"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "noauth"
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "4568e8a4-8665-4a35-bf9d-253bb528960b",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "ce1a8454-3639-47bf-9259-e7dc4e90f78d",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "3. Context Broker API write access",
+			"item": [
+				{
+					"name": "1. Create entity",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "fiware-Service",
+								"value": "{{service}}",
+								"type": "text"
+							},
+							{
+								"key": "fiware-ServicePath",
+								"value": "{{servicePath}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Gravitee-Api-Key",
+								"value": "{{X-Gravitee-Api-Key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": \"urn:ngsi-ld:WasteContainer:test\",\n  \"type\": \"WasteContainer\",\n  \"temperature\": {\n    \"value\": 23,\n    \"type\": \"Number\"\n  }\n}"
+						},
+						"url": {
+							"raw": "https://{{apiServer}}/context/v2/entities",
+							"protocol": "https",
+							"host": [
+								"{{apiServer}}"
+							],
+							"path": [
+								"context",
+								"v2",
+								"entities"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2. Get created entity",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "fiware-Service",
+								"value": "{{service}}",
+								"type": "text"
+							},
+							{
+								"key": "fiware-ServicePath",
+								"value": "{{servicePath}}",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Gravitee-Api-Key",
+								"value": "{{X-Gravitee-Api-Key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://{{apiServer}}/context/v2/entities/urn:ngsi-ld:WasteContainer:test",
+							"protocol": "https",
+							"host": [
+								"{{apiServer}}"
+							],
+							"path": [
+								"context",
+								"v2",
+								"entities",
+								"urn:ngsi-ld:WasteContainer:test"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3. Update created entity",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "fiware-Service",
+								"value": "{{service}}",
+								"type": "text"
+							},
+							{
+								"key": "fiware-ServicePath",
+								"value": "{{servicePath}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Gravitee-Api-Key",
+								"value": "{{X-Gravitee-Api-Key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"temperature\": {\n    \"value\": 25\n  }\n}"
+						},
+						"url": {
+							"raw": "https://{{apiServer}}/context/v2/entities/urn:ngsi-ld:WasteContainer:test/attrs",
+							"protocol": "https",
+							"host": [
+								"{{apiServer}}"
+							],
+							"path": [
+								"context",
+								"v2",
+								"entities",
+								"urn:ngsi-ld:WasteContainer:test",
+								"attrs"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "4. Get updated entity",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "fiware-Service",
+								"value": "{{service}}",
+								"type": "text"
+							},
+							{
+								"key": "fiware-ServicePath",
+								"value": "{{servicePath}}",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Gravitee-Api-Key",
+								"value": "{{X-Gravitee-Api-Key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://{{apiServer}}/context/v2/entities/urn:ngsi-ld:WasteContainer:test",
+							"protocol": "https",
+							"host": [
+								"{{apiServer}}"
+							],
+							"path": [
+								"context",
+								"v2",
+								"entities",
+								"urn:ngsi-ld:WasteContainer:test"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "5. Delete created entity",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "fiware-Service",
+								"value": "{{service}}",
+								"type": "text"
+							},
+							{
+								"key": "fiware-ServicePath",
+								"value": "{{servicePath}}",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Gravitee-Api-Key",
+								"value": "{{X-Gravitee-Api-Key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://{{apiServer}}/context/v2/entities/urn:ngsi-ld:WasteContainer:test",
+							"protocol": "https",
+							"host": [
+								"{{apiServer}}"
+							],
+							"path": [
+								"context",
+								"v2",
+								"entities",
+								"urn:ngsi-ld:WasteContainer:test"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "noauth"
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "bf0f6f9c-4047-4858-af44-83c3848d78ce",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "eaed31c9-e522-42e0-959c-7629acf9a875",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "4. Timeseries API read access",
+			"item": [
+				{
+					"name": "1. List entities in the default domain",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "fiware-Service",
+								"value": "{{service}}",
+								"type": "text"
+							},
+							{
+								"key": "fiware-ServicePath",
+								"value": "{{servicePath}}",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Gravitee-Api-Key",
+								"value": "{{X-Gravitee-Api-Key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://{{apiServer}}/timeseries/v2/entities",
+							"protocol": "https",
+							"host": [
+								"{{apiServer}}"
+							],
+							"path": [
+								"timeseries",
+								"v2",
+								"entities"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2. List entities in the orchestra cities domain, service path /Athens",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "fiware-Service",
+								"value": "{{service}}",
+								"type": "text"
+							},
+							{
+								"key": "fiware-ServicePath",
+								"value": "{{servicePath}}",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Gravitee-Api-Key",
+								"value": "{{X-Gravitee-Api-Key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://{{apiServer}}/timeseries/v2/entities",
+							"protocol": "https",
+							"host": [
+								"{{apiServer}}"
+							],
+							"path": [
+								"timeseries",
+								"v2",
+								"entities"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3. List entities in the orchestra cities domain, service path /Athens/Test",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "fiware-Service",
+								"value": "{{service}}",
+								"type": "text"
+							},
+							{
+								"key": "fiware-ServicePath",
+								"value": "{{servicePath}}",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Gravitee-Api-Key",
+								"value": "{{X-Gravitee-Api-Key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://{{apiServer}}/timeseries/v2/entities",
+							"protocol": "https",
+							"host": [
+								"{{apiServer}}"
+							],
+							"path": [
+								"timeseries",
+								"v2",
+								"entities"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "noauth"
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "4568e8a4-8665-4a35-bf9d-253bb528960b",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "ce1a8454-3639-47bf-9259-e7dc4e90f78d",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "5. IoT Config API read access",
+			"item": [
+				{
+					"name": "1. List protocols",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Gravitee-Api-Key",
+								"value": "{{X-Gravitee-Api-Key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://{{apiServer}}/iot/config/protocols",
+							"protocol": "https",
+							"host": [
+								"{{apiServer}}"
+							],
+							"path": [
+								"iot",
+								"config",
+								"protocols"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2. List DeviceGroups",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "fiware-Service",
+								"value": "{{service}}",
+								"type": "text"
+							},
+							{
+								"key": "fiware-ServicePath",
+								"value": "{{servicePath}}",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Gravitee-Api-Key",
+								"value": "{{X-Gravitee-Api-Key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https:/{{apiServer}}/iot/config/services",
+							"host": [
+								"https:"
+							],
+							"port": "",
+							"path": [
+								"{{apiServer}}",
+								"iot",
+								"config",
+								"services"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3. List devices",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "fiware-Service",
+								"value": "{{service}}",
+								"type": "text"
+							},
+							{
+								"key": "fiware-ServicePath",
+								"value": "{{servicePath}}",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Gravitee-Api-Key",
+								"value": "{{X-Gravitee-Api-Key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://{{apiServer}}/iot/config/devices?protocol=HTTP_UL",
+							"protocol": "https",
+							"host": [
+								"{{apiServer}}"
+							],
+							"path": [
+								"iot",
+								"config",
+								"devices"
+							],
+							"query": [
+								{
+									"key": "protocol",
+									"value": "HTTP_UL"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "noauth"
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "4568e8a4-8665-4a35-bf9d-253bb528960b",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "ce1a8454-3639-47bf-9259-e7dc4e90f78d",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "6. IoT Config API write access",
+			"item": [
+				{
+					"name": "1.  Create device group",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "fiware-Service",
+								"value": "{{service}}",
+								"type": "text"
+							},
+							{
+								"key": "fiware-ServicePath",
+								"value": "{{servicePath}}",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-Gravitee-Api-Key",
+								"value": "{{X-Gravitee-Api-Key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"services\": [\n        {\n            \"iotagent\": \"http://ul-iot-agent:4041/config/iot\",\n            \"apikey\": \"pippo\",\n            \"entity_type\": \"WasteContainer\",\n            \"service_path\": \"/WasteManagement\",\n            \"service\": \"OrchestraCities\",\n            \"resource\": \"/iot/ul\",\n            \"description\": \"Ultralight 2.0 IoT Agent (Node.js version) supports HTTP/MQTT/AMQP protocols\",\n            \"protocol\": \"HTTP_UL\",\n            \"internal_attributes\": [],\n            \"attributes\": [\n                {\n                    \"type\": \"Number\",\n                    \"name\": \"temperature\",\n                    \"object_id\": \"t\"\n                },\n                {\n                    \"type\": \"geo:point\",\n                    \"name\": \"location\",\n                    \"object_id\": \"l\"\n                },\n                {\n                    \"type\": \"Text\",\n                    \"name\": \"description\",\n                    \"object_id\": \"d\"\n                },\n                {\n                    \"type\": \"Text\",\n                    \"name\": \"status\",\n                    \"object_id\": \"S\"\n                },\n                {\n                    \"type\": \"Number\",\n                    \"name\": \"proximity\",\n                    \"object_id\": \"p\"\n                },\n                {\n                    \"expression\": \"${(@deviceHeight - @proximity) / @deviceHeight}\",\n                    \"type\": \"Number\",\n                    \"name\": \"fillingLevel\",\n                    \"object_id\": \"fillingLevel\"\n                }\n            ],\n            \"lazy\": [],\n            \"static_attributes\": [\n                {\n                    \"value\": \"160\",\n                    \"type\": \"Number\",\n                    \"name\": \"deviceHeight\"\n                },\n                {\n                    \"name\": \"simulated\",\n                    \"type\": \"Boolean\",\n                    \"value\": \"false\"\n                }\n            ],\n            \"commands\": []\n        }\n    ]\n}"
+						},
+						"url": {
+							"raw": "https://{{apiServer}}/iot/config/services",
+							"protocol": "https",
+							"host": [
+								"{{apiServer}}"
+							],
+							"path": [
+								"iot",
+								"config",
+								"services"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2. List DeviceGroups",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "fiware-Service",
+								"value": "{{service}}",
+								"type": "text"
+							},
+							{
+								"key": "fiware-ServicePath",
+								"value": "{{servicePath}}",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Gravitee-Api-Key",
+								"value": "{{X-Gravitee-Api-Key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://{{apiServer}}/iot/config/services",
+							"protocol": "https",
+							"host": [
+								"{{apiServer}}"
+							],
+							"path": [
+								"iot",
+								"config",
+								"services"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3.  Update DeviceGroup",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "fiware-Service",
+								"value": "{{service}}",
+								"type": "text"
+							},
+							{
+								"key": "fiware-ServicePath",
+								"value": "{{servicePath}}",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-Gravitee-Api-Key",
+								"value": "{{X-Gravitee-Api-Key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"apikey\": \"pippo2\"\n}"
+						},
+						"url": {
+							"raw": "https://{{apiServer}}/iot/config/services?apikey=pippo&protocol=HTTP_UL",
+							"protocol": "https",
+							"host": [
+								"{{apiServer}}"
+							],
+							"path": [
+								"iot",
+								"config",
+								"services"
+							],
+							"query": [
+								{
+									"key": "apikey",
+									"value": "pippo"
+								},
+								{
+									"key": "protocol",
+									"value": "HTTP_UL"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "4. List DeviceGroups",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "fiware-Service",
+								"value": "{{service}}",
+								"type": "text"
+							},
+							{
+								"key": "fiware-ServicePath",
+								"value": "{{servicePath}}",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Gravitee-Api-Key",
+								"value": "{{X-Gravitee-Api-Key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://{{apiServer}}/iot/config/services",
+							"protocol": "https",
+							"host": [
+								"{{apiServer}}"
+							],
+							"path": [
+								"iot",
+								"config",
+								"services"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "5. Create device",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content",
+								"value": "application/json",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "fiware-Service",
+								"value": "{{service}}",
+								"type": "text"
+							},
+							{
+								"key": "fiware-ServicePath",
+								"value": "{{servicePath}}",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-Gravitee-Api-Key",
+								"value": "{{X-Gravitee-Api-Key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n \"devices\": [\n   {\n     \"device_id\":   \"test\",\n     \"entity_name\": \"urn:ngsi-ld:WasteContainer:test\",\n     \"entity_type\": \"WasteContainer\"\n   }\n ]\n}"
+						},
+						"url": {
+							"raw": "https://{{apiServer}}/iot/config/devices?protocol=HTTP_UL",
+							"protocol": "https",
+							"host": [
+								"{{apiServer}}"
+							],
+							"path": [
+								"iot",
+								"config",
+								"devices"
+							],
+							"query": [
+								{
+									"key": "protocol",
+									"value": "HTTP_UL"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "6. List devices",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "fiware-Service",
+								"value": "{{service}}",
+								"type": "text"
+							},
+							{
+								"key": "fiware-ServicePath",
+								"value": "{{servicePath}}",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Gravitee-Api-Key",
+								"value": "{{X-Gravitee-Api-Key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://{{apiServer}}/iot/config/devices?protocol=HTTP_UL",
+							"protocol": "https",
+							"host": [
+								"{{apiServer}}"
+							],
+							"path": [
+								"iot",
+								"config",
+								"devices"
+							],
+							"query": [
+								{
+									"key": "protocol",
+									"value": "HTTP_UL"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "7.  Delete Device",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "fiware-Service",
+								"value": "{{service}}",
+								"type": "text"
+							},
+							{
+								"key": "fiware-ServicePath",
+								"value": "{{servicePath}}",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Gravitee-Api-Key",
+								"value": "{{X-Gravitee-Api-Key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"apikey\": \"pippo2\"\n}"
+						},
+						"url": {
+							"raw": "https://{{apiServer}}/iot/config/devices/test?protocol=HTTP_UL",
+							"protocol": "https",
+							"host": [
+								"{{apiServer}}"
+							],
+							"path": [
+								"iot",
+								"config",
+								"devices",
+								"test"
+							],
+							"query": [
+								{
+									"key": "protocol",
+									"value": "HTTP_UL"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "8.  Delete DeviceGroup",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "fiware-Service",
+								"value": "{{service}}",
+								"type": "text"
+							},
+							{
+								"key": "fiware-ServicePath",
+								"value": "{{servicePath}}",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Gravitee-Api-Key",
+								"value": "{{X-Gravitee-Api-Key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"apikey\": \"pippo2\"\n}"
+						},
+						"url": {
+							"raw": "https://{{apiServer}}/iot/config/services?apikey=pippo2&protocol=HTTP_UL",
+							"protocol": "https",
+							"host": [
+								"{{apiServer}}"
+							],
+							"path": [
+								"iot",
+								"config",
+								"services"
+							],
+							"query": [
+								{
+									"key": "apikey",
+									"value": "pippo2"
+								},
+								{
+									"key": "protocol",
+									"value": "HTTP_UL"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "noauth"
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "4568e8a4-8665-4a35-bf9d-253bb528960b",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "ce1a8454-3639-47bf-9259-e7dc4e90f78d",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "7. IoT Data API write access",
+			"item": [
+				{
+					"name": "1. Send data",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "0427b3d1-6902-4ef1-b4da-22b9ce9cae04",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "text/plain",
+								"type": "text"
+							},
+							{
+								"key": "X-Gravitee-Api-Key",
+								"value": "{{X-Gravitee-Api-Key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "p|10|S|ok"
+						},
+						"url": {
+							"raw": "https://{{apiServer}}/iot/data/ul?i=WasteContainer19&k=T3JjaGVzdHJhQ2l0aWVzOi9XYXN0ZU1hbmFnZW1lbnQ6V2FzdGVDb250YWluZXI6YzBiMjhmMzgtMmUzMy0xMWU5LWIxNzctYjIzYjk1MTVhMDE0",
+							"protocol": "https",
+							"host": [
+								"{{apiServer}}"
+							],
+							"path": [
+								"iot",
+								"data",
+								"ul"
+							],
+							"query": [
+								{
+									"key": "i",
+									"value": "WasteContainer19"
+								},
+								{
+									"key": "k",
+									"value": "T3JjaGVzdHJhQ2l0aWVzOi9XYXN0ZU1hbmFnZW1lbnQ6V2FzdGVDb250YWluZXI6YzBiMjhmMzgtMmUzMy0xMWU5LWIxNzctYjIzYjk1MTVhMDE0"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "noauth"
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "4568e8a4-8665-4a35-bf9d-253bb528960b",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "ce1a8454-3639-47bf-9259-e7dc4e90f78d",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "4db8201b-46f5-492a-bc81-cc227f56b39c",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "b7fc54f0-28c4-46ab-84d8-45a424700b46",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
