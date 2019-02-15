@@ -1,5 +1,7 @@
 # Orchestra Cities Documentation
 
+[![Documentation badge](https://img.shields.io/readthedocs/orchestracities.svg)](https://orchestracities.readthedocs.io/en/latest/)
+
 This repository contains the main documentation to present Orchestracities.
 
 It consists of an introduction, where the most important topics and ideas are
