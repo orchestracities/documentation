@@ -1,11 +1,31 @@
 # Tutorial
 
+This tutorial will cover the main activities you can perform in the different
+services composing OrchestraCities. For your convenience, you will find links
+to all the services at the homepage of the [**Portal**][1].
+
+Many of the steps of this tutorial are given as curl commands, but if you are
+familiar with [Postman](https://www.getpostman.com/), we have a collection at
+[/docs/rsrc/](rsrc/Orchestra API tests.postman_collection.json) that you may
+want to import to make things easier. To use it, you will need to define a
+[Postman Environment](https://learning.getpostman.com/docs/postman/environments_and_globals/manage_environments/)
+with the following variables:
+
+| Postman Variable Name | Value |
+| --------------| ----- |
+| {{server}}    | auth.s.orchestracities.com/auth/realms/default |
+| {{apiServer}} | api.s.orchestracities.com |
+| {{username}}  | your orchestracities account email |
+| {{password}}  | your orchestracities account password |
+| {{client_id}} | resource_server |
+| {{client_secret}} | get the secret of the resource_server client from [Keycloak's api][2] |
+| {{token}}     | this will be set for you when you follow User API Authentication section |
+
 ## User Management
 
 ### Create a user
 
-To create a new user, log into Keycloak's admin UI at
-<https://auth.s.orchestracities.com/auth/admin/default/console/#/realms/default>.
+To create a new user, log into [Keycloak's admin UI][2].
 Make sure your Keycloak account has admin privileges on Keycloak to allow for
 the creation of new users and assigning roles to them.
 
@@ -71,110 +91,149 @@ by selecting the Group they belong to and clicking "Leave".
 
 ![](rsrc/auth/keycloak_group_membership.png)
 
-### User API Authentication [Fede+Tomas]
+### User API Authentication
 
 1. Obtain a token with your email and password:
 
-    You will need to replace in the following command your `<username>`, your
-    `<password>` and the `<client_secret>` which you will find in the
+    You will need to replace in the following command your `{{username}}`, your
+    `{{password}}` and the `{{client_secret}}` which you will find in the
     `Credentials` tab of the `resource_server` client in the `Clients` list of
-    Keycloak's Admin API.
+    [Keycloak's Admin Page][2].
 
-    ```
-    curl --request POST \
-      --url https://auth.wolfsburg.digital/realms/default/protocol/openid-connect/token \
-      --header 'Content-Type: application/x-www-form-urlencoded' \
-      --data 'username=<username>&password=<password>&grant_type=password&client_id=resource_server&client_secret=<client_secret>'
-    ```
+        curl --request POST \
+          --url https://auth.s.orchestracities.com/auth/realms/default/protocol/openid-connect/token \
+          --header 'Content-Type: application/x-www-form-urlencoded' \
+          --data 'username={{username}}&password={{password}}&grant_type=password&client_id=resource_server&client_secret={{client_secret}}'
 
-  Response:
+    Response:
 
-    ```
-    {
-        "access_token": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2l...",
-        "expires_in": 36000,
-        "refresh_expires_in": 3600,
-        "refresh_token": "eyJhbGciOiJSUzI1NiIsInR5cCIg...",
-        "token_type": "bearer",
-        "not-before-policy": 0,
-        "session_state": "849d007b-93b3-4a5d-87e8-653cd774485b"
-    }
-    ```
+        {
+            "access_token": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2l...",
+            "expires_in": 36000,
+            "refresh_expires_in": 3600,
+            "refresh_token": "eyJhbGciOiJSUzI1NiIsInR5cCIg...",
+            "token_type": "bearer",
+            "not-before-policy": 0,
+            "session_state": "849d007b-93b3-4a5d-87e8-653cd774485b"
+        }
 
 1. Validate your token (to see that the token actually works fine):
 
-    ```
-    curl --request POST \
-      --url https://auth.wolfsburg.digital/realms/default/protocol/openid-connect/token/introspect \
-      --header 'Content-Type: application/x-www-form-urlencoded' \
-      --data 'client_id=resource_server&client_secret=<client_secret>&token=<access_token>'
-    ```
+    You will need to replace in the following command your `{{client_secret}}`
+    and the `{{access_token}}` you received in the previous step.
+
+        curl --request POST \
+          --url https://auth.s.orchestracities/auth/realms/default/protocol/openid-connect/token/introspect \
+          --header 'Content-Type: application/x-www-form-urlencoded' \
+          --data 'client_id=resource_server&client_secret={{client_secret}}&token={{access_token}}'
 
     Response:
-    ```
-    {
-        "jti": "d3304054-30d2-4328-b471-2e6c0410553f",
-        "exp": 1550258044,
-        "nbf": 0,
-        "iat": 1550222044,
-        "iss": "https://auth.s.orchestracities.com/auth/realms/default",
-        "aud": "resource_server",
-        "sub": "f2845018-6218-4b22-83d6-8b26681367e4",
-        "typ": "Bearer",
-        "azp": "resource_server",
-        "auth_time": 0,
-        "session_state": "57edaf48-6e72-4860-9c37-cbf29f39d6e1",
-        "name": "developer developer",
-        "given_name": "developer",
-        "family_name": "developer",
-        "preferred_username": "developer@orchestracities.com",
-        "email": "developer@orchestracities.com",
-        "acr": "1",
-        "fiware-services": {
-            "OrchestraCities": [
-                "/WasteManagement",
-                "/ParkingManagement",
-                "/MobilityManagement",
-                "/EnvironmentManagement"
+
+        {
+            "jti": "a2a1231-4328-4328-b471-2e630d2553f",
+            "exp": 1550258044,
+            "nbf": 0,
+            "iat": 1550222044,
+            "iss": "https://auth.s.orchestracities.com/auth/realms/default",
+            "aud": "resource_server",
+            "sub": "f2845018-6218-4b22-83d6-8b26681367e4",
+            "typ": "Bearer",
+            "azp": "resource_server",
+            "auth_time": 0,
+            "session_state": "57edaf48-6e72-4860-9c37-cbf29f39d6e1",
+            "name": "developer developer",
+            "given_name": "developer",
+            "family_name": "developer",
+            "preferred_username": "developer@orchestracities.com",
+            "email": "developer@orchestracities.com",
+            "acr": "1",
+            "fiware-services": {
+                "OrchestraCities": [
+                    "/WasteManagement",
+                    "/ParkingManagement",
+                    "/MobilityManagement",
+                    "/EnvironmentManagement"
+                ],
+                "Wolfsburg": [
+                    "/WasteManagement",
+                    "/ParkingManagement",
+                    "/EnvironmentManagement"
+                ]
+            },
+            "scope": [
+              ...
             ],
-            "Wolfsburg": [
-                "/WasteManagement",
-                "/ParkingManagement",
-                "/EnvironmentManagement"
-            ]
-        },
-        "scope": [
-          ...
-        ],
-        "client_id": "resource_server",
-        "username": "developer@orchestracities.com",
-        "active": true
-    }
-    ```
+            "client_id": "resource_server",
+            "username": "developer@orchestracities.com",
+            "active": true
+        }
+
+## Getting Access to APIs
+
+Access to the APIS of the different services composing OrchestraCities is
+governed by the [API Gateway][3], which is based on [Gravitee](https://gravitee.io/)
+
+This is the tool used to manage the access to the APIS, for example through the
+definition of access plans (and quotas on the number of requests per unit of
+time). For this tutorial, you may want to request an `apiKey` for the services
+being queried afterwards so as not to be bothered with reaching quota limits.
+
+The final goal is to get an `apiKey`, which you will store in your **Postman**
+configuration as explained in the beginning of this tutorial, or you'll use in
+the curl commands to replace `{{X-Gravitee-Api-Key}}` when needed.
+
+The process is quite similar for the different services (Orion,
+QuantumLeap, etc.) You need to follow these steps.
+
+1. Go to the [API Gateway][3] and login with your credentials.
+
+![API Gateway Login](rsrc/api/developer.png "API Gateway Login")
+
+1. Click on *SEE ALL APIS* and pick the api you want a key for
+
+1. In this example, we chose **Context Broker**
+
+![Context Broker API](rsrc/api/context-broker.png "Context Broker API")
+
+1. Scroll down a bit and click *Subscribe* to any plan that allows a reasonable
+number of requests for your need.
+
+![Subscribe to a Plan](rsrc/api/subscribe.png "Subscribe to a Plan")
+
+1. You will be asked to pick an application. You can use the
+*Default application* for now. Click Subscribe.
+
+1. Someone (an administrator) will have to approve your request.
+
+1. You will be notified when your request is approved, and you will be able to
+get your `apiKey` from the *subscription* part of the left menu.
+
+![My API Subscriptions](rsrc/api/subscriptions.png "My API Subscriptions")
 
 ## Register a device
 
 ### Register a device using APIs
 
-In order to receive and store the data that is dispatched from the importers, first you need to register the device in the IoT Agent. For that, you need to create the service groups and the devices.
+In order to receive and store the data that is dispatched from the importers,
+first you need to register the device in the IoT Agent. For that, you need to
+create the service groups and the devices.
 
 #### Service groups Operations
 
-* [TODO] update using protected APIs! [TOMAS]
+##### 1. Create
 
-#### 1. Create
-
-```prompt
+```
 curl -X POST \
-  https://iot-agent-ul.wolfsburg.digital/config/iot/services \
+  https://api.s.orchestracities.com/iot/config/config/iot/services \
+  -H 'Authorization: Bearer {{token}}' \
   -H 'Cache-Control: no-cache' \
   -H 'Content-Type: application/json' \
-  -H 'Fiware-Service: Wolfsburg' \
+  -H 'Fiware-Service: OrchestraCities' \
   -H 'Fiware-ServicePath: /WasteManagement' \
+  -H 'X-Gravitee-Api-Key: {{X-Gravitee-Api-Key}}' \
   -d '{
 	"services": [
 	   {
-	     "apikey":      "wolfsburg_api_key_waste_management",
 	     "cbroker":     "https://orion.wolfsburg.digital/v2/op/update/",
 	     "entity_type": "WasteContainer",
 	     "resource":    "/iot/ul"
@@ -183,50 +242,54 @@ curl -X POST \
 }'
 ```
 
-This request is responsible to create the service group for the Waste devices. For the Parking devices you must change the value for the fields `apiKey` and `entity_type` to `wolfsburg_api_key_parking_management` and `ParkingSpot`.
+This request creates the service group for the Waste devices. For the Parking
+devices you must update the value of `entity_type` to `ParkingSpot` and the
+`Fiware-ServicePath` to `ParkingManagement`.
 
-#### 2. Update
+##### 2. Update
 
-```prompt
+```
 curl -iX PUT \
-  'https://iot-agent-ul.wolfsburg.digital/config/iot/services?resource=/iot/ul&apikey=wolfsburg_api_key_waste_management' \
+  'https://api.s.orchestracities.com/iot/config/config/iot/services?resource=/iot/ul' \
   -H 'Content-Type: application/json' \
-  -H 'fiware-service: Wolfsburg' \
-  -H 'fiware-servicepath: /WasteManagement' \
+  -H 'Fiware-Service: OrchestraCities' \
+  -H 'Fiware-ServicePath: /WasteManagement' \
   -d '{
   "entity_type": "WasteContainerUpdate"
 }'
 ```
 
-This request will update the value for the field `entity_type` for the service group with `apiKey=wolfsburg_api_key_waste_management` and resource `resource=/iot/ul` for the specified `fiware-service` and `fiware-servicepath`.
+This request will update the value for the field `entity_type` for the service
+group with resource `resource=/iot/ul` for the specified `Fiware-Service` and
+`Fiware-ServicePath`.
 
-#### 3. Delete
+##### 3. Delete
 
-```prompt
+```
 curl -X DELETE \
-  'https://iot-agent-ul.wolfsburg.digital/config/iot/services/?resource=/iot/ul&apikey=wolfsburg_api_key_waste_management' \
+  'https://api.s.orchestracities.com/iot/config/config/iot/services/?resource=/iot/ul' \
   -H 'Cache-Control: no-cache' \
-  -H 'fiware-service: Wolfsburg' \
-  -H 'fiware-servicepath: /WasteManagement'
+  -H 'Fiware-Service: OrchestraCities' \
+  -H 'Fiware-ServicePath: /WasteManagement'
 ```
 
-This request will delete the service group `apiKey=wolfsburg_api_key_waste_management` and resource `resource=/iot/ul` for for the specified `fiware-service` and `fiware-servicepath`.
+This request will delete the service group for the resource `resource=/iot/ul`
+for for the specified `Fiware-Service` and `Fiware-ServicePath`.
 
-More operations (and examples) related with the services groups can be found [here](https://github.com/Fiware/tutorials.IoT-Agent#service-group-crud-actions).
+More operations (and examples) related with the services groups can be found
+[here](https://github.com/Fiware/tutorials.IoT-Agent#service-group-crud-actions).
 
 #### Devices Operations
 
-* [TODO] update using protected APIs! [TOMAS]
+##### 1. Create
 
-#### 1. Create
-
-```prompt
+```
 curl -X POST \
-  'https://iot-agent-ul.wolfsburg.digital/config/iot/devices \
+  'https://api.s.orchestracities.com/iot/config/config/iot/devices \
   -H 'Cache-Control: no-cache' \
   -H 'Content-Type: application/json' \
-  -H 'fiware-service: Wolfsburg' \
-  -H 'fiware-servicepath: /WasteManagement' \
+  -H 'Fiware-Service: OrchestraCities' \
+  -H 'Fiware-ServicePath: /WasteManagement' \
   -d '{
 	"devices": [
 	   {
@@ -260,34 +323,34 @@ curl -X POST \
 }'
 ```
 
-#### 2. Update
+##### 2. Update
 
-```prompt
+```
   curl -iX PUT \
-  'https://iot-agent-ul.w.orchestracities.com/config/iot/devices/waste001' \
+  'https://api.s.orchestracities.com/iot/config/config/iot/devices/waste001' \
   -H 'Content-Type: application/json' \
-  -H 'fiware-service: Wolfsburg' \
-  -H 'fiware-servicepath: /WasteManagement' \
+  -H 'Fiware-Service: OrchestraCities' \
+  -H 'Fiware-ServicePath: /WasteManagement' \
   -d '{
     "entity_type": "IoT-Device"
   }'
 ```
 
-#### 3. Delete
+##### 3. Delete
 
-```prompt
+```
 curl -iX DELETE \
-  'https://iot-agent-ul.w.orchestracities.com/config/iot/devices/waste001' \
-  -H 'fiware-service: Wolfsburg' \
-  -H 'fiware-servicepath: /WasteManagement'
+  'https://api.s.orchestracities.com/iot/config/config/iot/devices/waste001' \
+  -H 'Fiware-Service: OrchestraCities' \
+  -H 'Fiware-ServicePath: /WasteManagement'
 ```
 
-More operations (and examples) related with the devices can be found [here](https://github.com/Fiware/tutorials.IoT-Agent#device-crud-actions).
+More operations (and examples) related with the devices can be found
+[here](https://github.com/Fiware/tutorials.IoT-Agent#device-crud-actions).
 
 ### Register a device using UI
 
-To register a new Device, access the Portal at
-<https://portal.s.orchestracities.com/dashboard/>, and log in with your Keycloak
+To register a new Device, access the [Portal][1] and log in with your Keycloak
 credentials.
 
 ![](rsrc/auth/login.png)
@@ -384,7 +447,7 @@ For example, to record in Quantum Leap all the updates of entities of type
     },
     "notification": {
         "http": {
-            "url": "http://quantumleap:8668/v2/notify"
+            "url": "https://api.s.orchestracities.com/timeseries/v2/notify"
         },
         "attrs": [],
         "metadata": ["dateCreated", "dateModified"]
@@ -408,10 +471,9 @@ service).
 
 While in principle it is possible to store any data model in Orion, it is
 highly recommended to leverage FIWARE [Data Models](https://fiware-datamodels.readthedocs.io/en/latest/).
-Leveraging standardised datamodels ensures
-that different cities produce easy to re-use data. The benefit of this approach
-is that applications and services build on top of such models are easy to
-be re-used on different cities.
+Leveraging standardised data models ensures that different cities produce easy
+to re-use data. The benefit of this approach is that applications and services
+build on top of such models are easy to be re-used on different cities.
 
 Of course, your application may need additional models or slight modifications
 to existing models. In case we recommend to contribute your additions and
@@ -424,9 +486,8 @@ section.
 #### Querying Context Data from the UI
 
 Querying entities from the Context Broker can be done from the Portal's UI.
-Log in from <https://portal.s.orchestracities.com/dashboard/> with your Keycloak
-credentials, and from the navbar on the home page select "Entities" under
-"Data Management".
+Log in the [Portal][1] with your Keycloak credentials, and from the navbar on
+the home page select "Entities" under "Data Management".
 
 ![](rsrc/portal/entities.png)
 
@@ -434,40 +495,61 @@ From there, you'll be able to see all entities under the currently selected
 tenant, and filter by entity types and service paths (used by the device
 groups).
 
-#### Querying Context Data from the API [Fede+Tomas]
+#### Querying Context Data from the API
 
-1. To query context data, you will need to get a token (and api key if you need
-   to run many queries).
+1. To query context data, you will need to get a token (and an api key if you
+    need to run many queries).
 
-1. With your `access_token` and your `apiKey`, you can list all entities in a given
-    Tenant (fiware-Service) and Service Group (fiware-ServicePath):
+1. With your `{{access_token}}` and your `{{apiKey}}`, you can list all
+entities in a given Tenant (fiware-Service) and Service Group
+(fiware-ServicePath):
 
-    ```
-    curl --request GET \
-      --url https://api.wolfsburg.digital/context/v2/entities \
-      --header 'Authorization: Bearer <access_token>' \
-      --header 'Content: application/json' \
-      --header 'X-Gravitee-Api-Key: <apiKey>' \
-      --header 'fiware-Service: OrchestraCities' \
-      --header 'fiware-ServicePath: /ParkingManagement'
-    ```
+        curl --request GET \
+          --url https://api.s.orchestracities.com/context/v2/entities \
+          --header 'Authorization: Bearer {{access_token}}' \
+          --header 'Content: application/json' \
+          --header 'X-Gravitee-Api-Key: {{apiKey}}' \
+          --header 'Fiware-Service: OrchestraCities' \
+          --header 'Fiware-ServicePath: /ParkingManagement'
 
-1. Or access a specific entity in a given
-    Tenant (fiware-Service) and Service Group (fiware-ServicePath):
+1. Or access a specific entity in a given Tenant (fiware-Service) and
+Service Group (fiware-ServicePath):
 
-    ```
-    curl --request GET \
-      --url https://api.wolfsburg.digital/context/v2/entities \
-      --header 'Authorization: Bearer <access_token>' \
-      --header 'Content: application/json' \
-      --header 'X-Gravitee-Api-Key: <apiKey>' \
-      --header 'fiware-Service: OrchestraCities' \
-      --header 'fiware-ServicePath: /ParkingManagement'
-    ```
+        curl --request GET \
+          --url https://api.s.orchestracities.com/context/v2/entities \
+          --header 'Authorization: Bearer {{access_token}}' \
+          --header 'Content: application/json' \
+          --header 'X-Gravitee-Api-Key: {{apiKey}}' \
+          --header 'Fiware-Service: OrchestraCities' \
+          --header 'Fiware-ServicePath: /ParkingManagement'
 
-For more information on context broker apis, refer to... [TOMAS]
+For more information on context broker apis, refer to the official
+[Orion Context Broker documentation](https://fiware-orion.readthedocs.io/en/latest/),
+or its
+[step-by-step tutorial](https://fiware-tutorials.readthedocs.io/en/latest/getting-started/index.html).
 
-### Querying Historical Data [Tomas]
+### Querying Historical Data
+
+1. To query historical context data, you will need to get a token (and an api
+    key if you need to run many queries).
+
+1. With your `{{access_token}}` and your `{{apiKey}}`, you can list all
+records of an entity attribute () in a given Tenant (fiware-Service) and
+Service Group (fiware-ServicePath):
+
+        curl --request GET \
+          --url https://api.s.orchestracities.com/context/v2/entities/urn:ngsi-ld:AirQualityObserved:lugano-2689/attrs/PM25?fromDate=2019-01-01T00:00:00&toDate=2019-03-01T00:00:00 \
+          --header 'Authorization: Bearer {{access_token}}' \
+          --header 'Content: application/json' \
+          --header 'X-Gravitee-Api-Key: {{apiKey}}' \
+          --header 'Fiware-Service: OrchestraCities' \
+          --header 'Fiware-ServicePath: /ParkingManagement'
+
+For more information on QuantumLeap, the component in OrchestraCities handling
+historical context data, refer to the official
+[QuantumLeap documentation](https://quantumleap.readthedocs.io/en/latest/),
+or its
+[step-by-step tutorial](https://fiware-tutorials.readthedocs.io/en/latest/time-series-data/index.html).
 
 ## Importing data from external source
 
@@ -478,7 +560,7 @@ important to keep in mind that the platform is currently focused on real time
 data from APIs or sensors. This implies that importing "static" data, it is
 currently supported via some work around.
 
-### Which approach to use to import different type of data?
+### Which approach to use to import a different type of data?
 
 The rule of thumb could be the following:
 
@@ -507,16 +589,16 @@ The rule of thumb could be the following:
 
 - In case of static data (i.e. data that relates to entities not evolving over
   time), it is recommended to inject them only in the the Context Broker.
-  (May be of use storing them in Quantum Leap if you want to query them in
+  (May be of use storing them in QuantumLeap if you want to query them in
   Grafana, but other than that, it would not make sense).
 
 - In case of historical data (i.e. data that pertains evolution of an entity
-  in the past), it is recommended to inject them directly in Quantum Leap.
+  in the past), it is recommended to inject them directly in QuantumLeap.
   Eventually, only the last point in time should be stored in Context Broker.
   Passing by Context Broker to store multiple time series, may be quite an
   overhead.
 
-As mentioned above, t is highly recommended to leverage FIWARE
+As mentioned above, it is highly recommended to leverage FIWARE
 [Data Models](https://fiware-datamodels.readthedocs.io/en/latest/).
 
 ### Which tools to use to import data?
@@ -538,8 +620,7 @@ Here are the recommendations from Orchestra Cities:
 
 Here we shortly explain an example pipeline we created to import data
 from a CSV file into Orion. Data imported are mapped to the `PointOfInterest`
-data model. You can find the example ready to be customised
-in the [dataflow](rsrc/dataflow/POI_GAS_STATIONS.json) folder.
+data model. You can find the example ready to be customised [here](rsrc/dataflow/POI_GAS_STATIONS.json).
 
   ![Example Pipeline](rsrc/dataflow/pipeline-overview.png "Example Pipeline")
 
@@ -607,17 +688,19 @@ in the [dataflow](rsrc/dataflow/POI_GAS_STATIONS.json) folder.
 
   ![WireMock](rsrc/dataflow/wiremock.png "WireMock")
 
-
-## Getting Access to APIs [Tomas]
-
-
 ## Creating Dashboards
 
-For the dashboards creation you need to follow some steps:
+For the dashboards creation, we use [Grafana](https://grafana.com/). The
+dynamic nature of dashboards and their composition with elements such as graphs
+and panels enables a wide range of customisation.
+
+To get started, you need to log in the [dashboards][4] interface with your
+credentials and follow these steps.
 
 #### 1. Create datasource
 
-The datasource represents the incoming data that will be used to feed the dashboards. To create a new data source you need to:
+The datasource represents the incoming data that will be used to feed the
+dashboards. To create a new data source you need to:
 
 1. Access the *Data Sources* section present in the *Configuration* panel. It will open a section where you can manages all the data sources and add new ones.
 
@@ -691,7 +774,7 @@ This section allows you to choose the way the data is represented on the chart. 
 
 In order to save all changes regarding the dashboards you must do it manually every time you created/update a dashboard. For that you need to click on `disk` icon positioned at the top right corner of the window.
 
-![Save](images/save.png)
+![Save](rsrc/dashboard/save.png)
 
 #### 9. Dashboard time representation
 
@@ -712,3 +795,12 @@ The dashboards can be organised as you wish. For that you need to access *Manage
 After that you will be able to see and manage all folders and dashboards.
 
 ![Manage2](rsrc/dashboard/manage2.png)
+
+<!---
+URL reference, do not remove.
+-->
+
+[1]: https://portal.s.orchestracities.com
+[2]: https://auth.s.orchestracities.com/auth/admin/default/console/#/realms/default
+[3]: https://developer.s.orchestracities.com/
+[4]: https://dashboard.s.orchestracities.com/

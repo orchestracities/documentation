@@ -6,7 +6,7 @@ copyright: 'Copyright &copy; 2019 - Orchestra Cities'
 theme: readthedocs
 markdown_extensions: [toc,fenced_code]
 docs_dir: docs
-pages:
+nav:
     - Home: 'index.md'
     - 'Introduction': 'introduction.md'
     - 'Tutorial': 'tutorial.md'
