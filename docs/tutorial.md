@@ -5,18 +5,18 @@
 ### Create a user
 
 To create a new user, log into Keycloak's admin UI at
-<https://auth.wolfsburg.digital/admin/default/console/#/realms/default>.
+<https://auth.s.orchestracities.com/auth/admin/default/console/#/realms/default>.
 Make sure your Keycloak account has admin privileges on Keycloak to allow for
 the creation of new users and assigning roles to them.
 
-![](figures/keycloak.png)
+![](rsrc/auth/keycloak.png)
 
 From the Keycloak Admin UI, select "Users" on the left sidebar, and from there
 click on "Add User". Fill in the new User's details and click on "Save".
 
 Back on the Users page, find the newly created User and click on it to bring up
 its details page. Under the groups tab, add the user to at least one tenant
-group for the Portal, in this case it should be "Wolfsburg".
+group for the Portal, in this case it should be "OrchestraCities".
 
 ### Create Service Groups
 
@@ -24,24 +24,24 @@ From the Keycloak Admin UI, select "Groups" on the left sidebar. You'll be
 presented with a list of groups and subgroups. The root groups represent the
 tenants, while their subgroups are either Service Groups or User Groups.
 
-![](figures/keycloak_groups.png)
+![](rsrc/auth/keycloak_groups.png)
 
-To create a new Service Group for the "Wolfsburg" tenant, click on "Wolfsburg"
+To create a new Service Group for the "OrchestraCities" tenant, click on "OrchestraCities"
 (do not worry if it doesn't look like it's being highlighted), and then click
 "New" on the top right. Enter a name for the new Service Group and click "save".
-The new group should now appear under "Wolfsburg". In order to define it as a
+The new group should now appear under "OrchestraCities". In order to define it as a
 Service Group, click on it and then click 'edit' on the top right. On this new
 page, select the "Attributes" tab. From here, add two new attributes with keys
 "servicepath" and "servicePath", both with values set to "true". Make sure to
 click the "add" button on the right for each before clicking "save" at the
 bottom.
 
-![](figures/keycloak_attributes.png)
+![](rsrc/auth/keycloak_attributes.png)
 
 ### Create User Groups and Assign User Roles
 
 Creating User Groups is similar to creating Service Groups. Once again, go to
-the "Groups" page, click on "Wolfsburg" and then click "New". Enter a name for
+the "Groups" page, click on "OrchestraCities" and then click "New". Enter a name for
 the new User Group, and click "save". Now click on the newly created group and
 then on "Edit". This time, select the "Role Mappings" tab. Here you will see
 a section for "Realm Roles", and a dropdown menu for "Client Roles". From that
@@ -53,7 +53,7 @@ roles from this User Group, which include the ability to read, create, write
 removing Roles will automatically set those Roles to the group, no need to click
 on any save button this time.
 
-![](figures/keycloak_roles.png)
+![](rsrc/auth/keycloak_roles.png)
 
 ### Add users to User Groups or Service Groups
 
@@ -64,16 +64,21 @@ the User you want to alter by searching for its username, or click "View all
 users" and find it from the full list. Once found, click on their id on the
 leftmost column. On this new page, click on the "Groups" tab. You'll see a list
 Groups the User belongs to, and one of the available Groups for the User to join.
-Select the User Group and the Service Group you created under "Wolfsburg" and
+Select the User Group and the Service Group you created under "OrchestraCities" and
 click on "Join". They should appear now under "Group Membership". The User is
 now member of those Groups. Removing a User from a Group can be done similarly
 by selecting the Group they belong to and clicking "Leave".
 
-![](figures/keycloak_group_membership.png)
+![](rsrc/auth/keycloak_group_membership.png)
 
 ### User API Authentication [Fede+Tomas]
 
 1. Obtain a token with your email and password:
+
+    You will need to replace in the following command your `<username>`, your
+    `<password>` and the `<client_secret>` which you will find in the
+    `Credentials` tab of the `resource_server` client in the `Clients` list of
+    Keycloak's Admin API.
 
     ```
     curl --request POST \
@@ -148,169 +153,6 @@ by selecting the Group they belong to and clicking "Leave".
     ```
 
 ## Register a device
-
-### Configuring and deploying WebSocket importer
-
-The data importers are responsible for the waste and parking data collection and that data is provided via websockets. So, the importers the main purpose, is to connect and receive information from the websockets and send it to the IoT Agent.
-
-#### 1. Edit variables
-
-The importers main functionality is to collect data from websockets and redirect it to the IoT-Agent. For that, you need to set the websocket and IoT Agent URL's.
-The `constans.py` file contains all important variables like the URL's, that you can edit to change the configuration:
-
-```python
-
-# Data Sources
-PARKING_URL = "ws://wobcom.thingsos.de:8999/integrations/22"
-WASTE_URL = "ws://wobcom.thingsos.de:8999/integrations/21"
-
-# Orion
-ORION_URL = "https://orion.wolfsburg.digital/v2/op/update/"
-FIWARE_SERVICE = "Wolfsburg"
-FIWARE_SERVICE_PATH = "/WasteManagement"
-
-# IoT Agent
-IOT_AGENT_URL = "https://iot-agent-ul.wolfsburg.digital/config/iot/"
-IOT_AGENT_UPDATES_URL = "https://iot-agent-ul.wolfsburg.digital/iot/ul"
-IOT_AGENT_API_KEY_WASTE = "wolfsburg_api_key_waste_management"
-IOT_AGENT_API_KEY_PARKING = "wolfsburg_api_key_parking_management"
-IOT_AGENT_RESOURCE = "/iot/ul"
-
-SERVICE_GROUPS = [
-    {
-        "name": "WasteContainer",
-        "api_key": IOT_AGENT_API_KEY_WASTE
-    },
-    {
-        "name": "ParkingSpot",
-        "api_key": IOT_AGENT_API_KEY_PARKING
-    }
-]
-```
-
- * **PARKING_URL:** Parking data websocket URL
- * **WASTE_URL:** Waste data websocket URL
-
- * **IOT_AGENT_URL:** IoT Agent URL. Must follow this format: `https://<insert_dns>/config/iot/`
- * **IOT_AGENT_UPDATES_URL:** IoT Agent URL for devices updates. Must follow this format: `https://<insert_dns>/iot/d`
-
-Besides the Websockets and Iot Agent URL's you can also change the API Key's for parking and waste data. This API Key's, are used for the devices updates. The default values are:
-
- * **IOT_AGENT_API_KEY_WASTE:** `wolfsburg_api_key_waste_management`
- * **IOT_AGENT_API_KEY_PARKING:** `wolfsburg_api_key_parking_management`
-
-The remain variables define the service and path inside the Orion Context Broker. That means that the data will be saved inside the service and path that you define. The default values are:
-
- * **FIWARE_SERVICE:** `Wolfsburg`
- * **FIWARE_SERVICE_PATH:** `/WasteManagement`
-
-#### 2. Run locally to test
-
-Before running in production you can test the importers locally. For that you just need to run each importer individually:
-
-**Run the parking importer:**
-
-```promp
-python parking_sub.py
-```
-
-You should see the following result:
-
-![Run Parking Subscription](images/parking_sub.png)
-
-**Run the waste importer:**
-
-```prompt
-python waste_sub.py
-```
-
-You should see the following result:
-
-![Run Waste Subscription](images/waste_sub.png)
-
-#### 3. Create docker images
-
-#### 3.1. Docker image for Parking importer
-
-First you need to build the Docker image. To do that, you need to do the following command:
-
-```prompt
-docker build -f Dockerfile.parking .
-```
-As result you should see something like:
-
-![Build Docker Parking Image](images/build_parking_image.png)
-
-After the image being sucessfully built, you must use the resulting Docker image reference to tag the image:
-
-```prompt
-docker tag <result_reference> <docker_registry>/<image_name>:<version>
-```
-
-Example:
-```prompt
-docker tag 3dad2e427c9a <somedockerregistry>/parking_importer:1.0
-```
-
-Finally, you just need to push the new image to the docker registry:
-
-```prompt
-docker push <docker_registry>/<image_name>:<version>
-```
-
-Example:
-```prompt
-docker push <somedockerregistry>/parking_importer:1.0
-```
-
-As result you should see something like:
-
-![Push Docker Parking Image](images/push_parking_image.png)
-
-#### 3.2. Docker image for Waste importer
-
-For the waste importer, the process is exactly the same, you just need to use the `Dockerfile.waste` instead `Dockerfile.parking` for the image build.
-
-#### 4. Update deployment files
-
-Before we can update the running services with the new images, we first need to update the deployments files in order to set the Docker image version to deploy.
-For that you must update the files `parking_deployment.yaml` and `waste_deployment.yaml` and set the field `image` with the new Docker image generated before. Example:
-
-```YAML
-....
-    spec:
-      containers:
-      - name: wolfsburg-parking-importer
-        image: orchestracities/wolfsburg-parking-importer:1.3
-```
-
-#### 5. Remove old parking and waste importers deployments
-
-Before the deploy of the new image for parking or waste importer it is necessary to remove the (old) ones that are still running. For that you need to run:
-
-```prompt
-kubectl delete -f parking_deployment.yaml
-```
-
- and
-
- ```prompt
-kubectl delete -f waste_deployment.yaml
-```
-
-#### 6. Deploy the new importers version
-
-After removing the old versions, you need to create the deployment with the new versions:
-
-```prompt
-kubectl create -f parking_deployment.yaml
-```
-
- and
-
- ```prompt
-kubectl create -f waste_deployment.yaml
-```
 
 ### Register a device using APIs
 
@@ -438,23 +280,23 @@ curl -iX DELETE \
   'https://iot-agent-ul.w.orchestracities.com/config/iot/devices/waste001' \
   -H 'fiware-service: Wolfsburg' \
   -H 'fiware-servicepath: /WasteManagement'
-  ```
+```
 
 More operations (and examples) related with the devices can be found [here](https://github.com/Fiware/tutorials.IoT-Agent#device-crud-actions).
 
 ### Register a device using UI
 
 To register a new Device, access the Portal at
-<https://portal.wolfsburg.digital/dashboard/>, and log in with your Keycloak
+<https://portal.s.orchestracities.com/dashboard/>, and log in with your Keycloak
 credentials.
 
-![](figures/login.png)
+![](rsrc/auth/login.png)
 
-![](figures/home.png)
+![](rsrc/portal/home.png)
 
 From the top navigation bar select "Device Groups" under "Device Management"
 
-![](figures/device_groups.png)
+![](rsrc/portal/device_groups.png)
 
 Next to a Device Group there are 4 icons. From left to right they allow the user
 to view more details of the group, see the Devices registered under it, edit the
@@ -465,13 +307,13 @@ the top to create a new Group.
 Clicking the second icon will bring up the list of Devices registered under
 that particular group.
 
-![](figures/devices.png)
+![](rsrc/portal/devices.png)
 
 You have the option to register a single new Device, or multiple Devices in bulk
 using a configuration file listing them. For now, select
 "Register single Device".
 
-![](figures/new_device.png)
+![](rsrc/portal/new_device.png)
 
 In the new Device form fill in the information for the Device you're registering
 and click submit. Make sure all required fields are filled in correctly.
@@ -524,7 +366,7 @@ entity is updated, its values in Quantum Leap. I.e. store a time series of
 entities values.
 
 For example, to record in Quantum Leap all the updates of entities of type
-`ParkingSpot`, we would use a subscription as follow:
+`ParkingSpot`, we would use a subscription as follows:
 
 ```
 {
@@ -565,7 +407,8 @@ service).
 ### Alignment with FIWARE Data Models
 
 While in principle it is possible to store any data model in Orion, it is
-highly recommended to leverage FIWARE [Data Models](https://fiware-datamodels.readthedocs.io/en/latest/). Leveraging standardised datamodels ensure
+highly recommended to leverage FIWARE [Data Models](https://fiware-datamodels.readthedocs.io/en/latest/).
+Leveraging standardised datamodels ensures
 that different cities produce easy to re-use data. The benefit of this approach
 is that applications and services build on top of such models are easy to
 be re-used on different cities.
@@ -573,18 +416,19 @@ be re-used on different cities.
 Of course, your application may need additional models or slight modifications
 to existing models. In case we recommend to contribute your additions and
 changes and discuss them with the community as discussed in the
-[HOW TO USE FIWARE HARMONISED DATA MODELS IN YOUR PROJECTS](https://fiware-datamodels.readthedocs.io/en/latest/howto/index.html) section.
+[HOW TO USE FIWARE HARMONISED DATA MODELS IN YOUR PROJECTS](https://fiware-datamodels.readthedocs.io/en/latest/howto/index.html)
+section.
 
 ### Querying Context Data
 
 #### Querying Context Data from the UI
 
 Querying entities from the Context Broker can be done from the Portal's UI.
-Log in from <https://portal.wolfsburg.digital/dashboard/> with your Keycloak
+Log in from <https://portal.s.orchestracities.com/dashboard/> with your Keycloak
 credentials, and from the navbar on the home page select "Entities" under
 "Data Management".
 
-![](figures/entities.png)
+![](rsrc/portal/entities.png)
 
 From there, you'll be able to see all entities under the currently selected
 tenant, and filter by entity types and service paths (used by the device
@@ -630,7 +474,7 @@ For more information on context broker apis, refer to... [TOMAS]
 As early mentioned, the entry point for any data management activity is
 usually the Orion Context Broker.
 Importing data from external sources can be done in different ways. It is
-important to keep in mind that the platform is currently focus on real time
+important to keep in mind that the platform is currently focused on real time
 data from APIs or sensors. This implies that importing "static" data, it is
 currently supported via some work around.
 
@@ -695,15 +539,15 @@ Here are the recommendations from Orchestra Cities:
 Here we shortly explain an example pipeline we created to import data
 from a CSV file into Orion. Data imported are mapped to the `PointOfInterest`
 data model. You can find the example ready to be customised
-in the [Examples](examples/POI_GAS_STATIONS.json) folder.
+in the [dataflow](rsrc/dataflow/POI_GAS_STATIONS.json) folder.
 
-  ![Example Pipeline](images/pipeline-overview.png "Example Pipeline")
+  ![Example Pipeline](rsrc/dataflow/pipeline-overview.png "Example Pipeline")
 
 1. The first stage of the pipeline retrieves the data using http and defines the data
   format of the retrieved file. In this case a CSV using `;` as delimiter.
   To do that we use an origin stage of type `HTTP Client`.
 
-    ![Data Retrieval](images/pipeline-1.png "Data Retrieval")
+    ![Data Retrieval](rsrc/dataflow/pipeline-1.png "Data Retrieval")
 
 1. The second stage of the pipeline, converts the CSV records to the NGSI data
   structure for the `PointOfInterest` data model. A processor stage of type
@@ -719,7 +563,7 @@ in the [Examples](examples/POI_GAS_STATIONS.json) folder.
   (using `${emptyList()}`) and then map the each array index
   to its value (e.g. `/location/coordinates[0]` maps to `${record:value('/LAT')}`).
 
-    ![Data Mapping to NGSI](images/pipeline-2.png "Data Mapping to NGSI")
+    ![Data Mapping to NGSI](rsrc/dataflow/pipeline-2.png "Data Mapping to NGSI")
 
     **Note:** unfortunately at this stage there is no way to cast the value to
     a different type from the one derived from the CSV (text). So this has to be
@@ -729,19 +573,19 @@ in the [Examples](examples/POI_GAS_STATIONS.json) folder.
   import. A processor stage of type
   `Field Remover` is performing the task.
 
-    ![Remove unneeded fields](images/pipeline-3.png "Remove unneeded fields")
+    ![Remove unneeded fields](rsrc/dataflow/pipeline-3.png "Remove unneeded fields")
 
 1. The forth stage of the pipeline, convert types of fields as needed using
    a processor stage of type `Field Type Converter`.
 
-    ![Convert fields data type](images/pipeline-4.png "Convert fields data type")
+    ![Convert fields data type](rsrc/dataflow/pipeline-4.png "Convert fields data type")
 
 1. The forth stage of the pipeline, normalise the NGSI representation (this is
   required to use batch operations on Orion) using a processor of type
   `Java Script`. The normalisation is the process to attach fields type to
   the data values.
 
-    ![Normalise](images/pipeline-5.png "Normalise")
+    ![Normalise](rsrc/dataflow/pipeline-5.png "Normalise")
 
 1. The last stage of the pipeline, send data to the Orion Context broker
   using a destination of type
@@ -751,7 +595,7 @@ in the [Examples](examples/POI_GAS_STATIONS.json) folder.
   this operation we need just to use `append` as `actionType` in the
   communication with the Orion end point.
 
-    ![Send Data](images/pipeline-6.png "Send Data")
+    ![Send Data](rsrc/dataflow/pipeline-6.png "Send Data")
 
 #### Tips
 
@@ -761,7 +605,7 @@ in the [Examples](examples/POI_GAS_STATIONS.json) folder.
    [WireMock](http://wiremock.org/) to ensure that the send payload are the ones you expect. [MockLab](https://app.mocklab.io/) offers also a cloud instance
    of WireMock.
 
-  ![WireMock](images/wiremock.png "WireMock")
+  ![WireMock](rsrc/dataflow/wiremock.png "WireMock")
 
 
 ## Getting Access to APIs [Tomas]
@@ -777,94 +621,94 @@ The datasource represents the incoming data that will be used to feed the dashbo
 
 1. Access the *Data Sources* section present in the *Configuration* panel. It will open a section where you can manages all the data sources and add new ones.
 
-![Data Sources](images/data_sources.png)
+![Data Sources](rsrc/dashboard/data_sources.png)
 
 2. Click in the *Add data source* button
 
-![Add Data Source](images/add_data_source.png)
+![Add Data Source](rsrc/dashboard/add_data_source.png)
 
 3. Fill all the fields with the desired configuration and click *Save & Test*
 
-![Configure Data Source](images/configure_data_source.png)
+![Configure Data Source](rsrc/dashboard/configure_data_source.png)
 
 #### 2. Start new dashboard / Import dashboard
 
-To create a new dashboard you need to access the *Dashboard* under the *Create* section, and after that you will be asked to select a new visualization panel to add to the dashboard.
+To create a new dashboard you need to access the *Dashboard* under the *Create* section, and after that you will be asked to select a new visualisation panel to add to the dashboard.
 
-![Create Dashboard](images/create_dashboard.png)
+![Create Dashboard](rsrc/dashboard/create_dashboard.png)
 
 Select the *Graph* option. After that, a new panel will be created, that you can move and resize as you wish.
 
-![Create Graph](images/create_graph.png)
+![Create Graph](rsrc/dashboard/create_graph.png)
 
-![Graph](images/graph_created.png)
+![Graph](rsrc/dashboard/graph_created.png)
 
 At the top of the panel click on the down arrow next to *Panel Title* and then select *Edit* to configure the panel.
 
-![Graph Options](images/graph_options.png)
+![Graph Options](rsrc/dashboard/graph_options.png)
 
-At the configuration panel, you will be presented with severall sections:
+At the configuration panel, you will be presented with several sections:
 
 **General**
 
 Set static data as name and description of the panel.
 
-![General](images/general.png)
+![General](rsrc/dashboard/general.png)
 
 **Metrics**
 
 Section where you choose the data source and query that will feed the chart.
 
-![Mertics](images/metrics.png)
+![Metrics](rsrc/dashboard/metrics.png)
 
 If you use the example of the previous image you will be able to see the filling level for all available waste containers.
 
-![Filling Level](images/filling_level.png)
+![Filling Level](rsrc/dashboard/filling_level.png)
 
 **Axes**
 
 Section where you can configure the chart axis.
 
-![Axes](images/axes.png)
+![Axes](rsrc/dashboard/axes.png)
 
 For the waste container filling level, we need to use the unit `percent (0.0-1.0)` for the Y axel, use `1` for `Decimals` and set `YMin` to `0` and the `YMax` to `1`. After that you will noticed that the Y axel units changed.
 
-![Units](images/units.png)
+![Units](rsrc/dashboard/units.png)
 
 **Legend**
 
-Here you organize the way that you see the information related with the chart. Fot this case we will set the legend as a table, to the right where we can see the minimum, maximum and current value for each container filling level.
+Here you organise the way that you see the information related with the chart. For this case we will set the legend as a table, to the right where we can see the minimum, maximum and current value for each container filling level.
 
-![Legend](images/legend.png)
+![Legend](rsrc/dashboard/legend.png)
 
 **Display**
 
 This section allows you to choose the way the data is represented on the chart. For this case the data will be represented with lines.
 
-![Display](images/display.png)
+![Display](rsrc/dashboard/display.png)
 
 #### 8. Save Dashboard
 
-In order to save all changes regarding the dasboards you must do it manually every time you created/update a dashboard. For that you need to click on `disk` icon positioned at the top right corner of the window.
+In order to save all changes regarding the dashboards you must do it manually every time you created/update a dashboard. For that you need to click on `disk` icon positioned at the top right corner of the window.
 
-![SAve](images/save.png)
+![Save](images/save.png)
 
 #### 9. Dashboard time representation
 
 All the panels that are part of dashboard, represent data according to a specific time range. That time range can be defined at the top right corner of the portal.
 
-![Time](images/time.png)
+![Time](rsrc/dashboard/time.png)
 
 If you click on the time button you will be able to change the time range that you wnat to see.
 
-![Set Time](images/time2.png)
+![Set Time](rsrc/dashboard/time2.png)
 
-#### 10. Dashboards organization
+#### 10. Dashboards organisation
 
-The dashboards can be organized as you wish. For that you need to access *Manage* under the *Dashboards* section.
+The dashboards can be organised as you wish. For that you need to access *Manage* under the *Dashboards* section.
 
-![Manage](images/manage.png)
+![Manage](rsrc/dashboard/manage.png)
 
 After that you will be able to see and manage all folders and dashboards.
 
-![Manage2](images/manage2.png)
+![Manage2](rsrc/dashboard/manage2.png)
