@@ -1,0 +1,12 @@
+site_name: "Orchestra Cities"
+site_url: https://orchestracities.com
+site_description: 'Documentation for Orchestra Cities'
+site_author: 'Orchestra Cities'
+copyright: 'Copyright &copy; 2019 - Orchestra Cities'
+theme: readthedocs
+markdown_extensions: [toc,fenced_code]
+docs_dir: docs
+pages:
+    - Home: 'index.md'
+    - 'Introduction': 'introduction.md'
+    - 'Tutorial': 'tutorial.md'
