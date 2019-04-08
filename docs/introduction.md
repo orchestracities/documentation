@@ -132,7 +132,7 @@ The process works as follow:
 In case of success, the call will be forwarded to the API in the backend
 (if not, the user will be returned a 401 “Not Authorized” response).
 
-## Data Management
+### Data Management
 
 The core of the data management is a “data bus” collecting data from the
 different sources and forwarding them to the different backend APIs
@@ -280,7 +280,7 @@ own data import flow for a given service.
 
 ![Data Integration Flow](rsrc/overview/data_integration.png "Data Integration Flow")
 
-# Open Standards
+## Open Standards
 
 Orchestra Cities relies on different Open Standards that facilitates the
 integration with existing solutions.
