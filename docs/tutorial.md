@@ -23,10 +23,10 @@ with the following variables:
 
 ## User Management
 
-A specific interface for user management is under development. Meanwhile, 
-user management is done directly within Keycloak, the OrchestraCities auth provider.
+User Management can be performed directly inside of Keycloak's admin UI, or
+through the Portal's UI.
 
-### Create a user
+### Create a user with Keycloak
 
 To create a new user, log into [Keycloak's admin UI][2].
 Make sure your Keycloak account has admin privileges on Keycloak to allow for
@@ -41,7 +41,20 @@ Back on the Users page, find the newly created User and click on it to bring up
 its details page. Under the groups tab, add the user to at least one tenant
 group for the Portal, in this case it should be "OrchestraCities".
 
-### Create Service Groups
+### Create a user with the Portal
+
+To create a new user, log into the [Portal][1]. Your Keycloak account needs to
+have the required privileges to do so just like with the Keycloak Admin UI
+procedure. If your account does, select on the nav bar the tenant you want the
+new User under, then click on Admin, and then Users.
+
+![](rsrc/portal/users.png)
+
+From there you can click on New User to bring up a User creation form. Fill in the
+required details and create a new User from there. Note: a User must be added
+to at least one Group to start, so ensure at least one Group exists.
+
+### Create Service Groups with Keycloak
 
 From the Keycloak Admin UI, select "Groups" on the left sidebar. You'll be
 presented with a list of groups and subgroups. The root groups represent the
@@ -61,7 +74,7 @@ bottom.
 
 ![](rsrc/auth/keycloak_attributes.png)
 
-### Create User Groups and Assign User Roles
+### Create User Groups and Assign User Roles with Keycloak
 
 Creating User Groups is similar to creating Service Groups. Once again, go to
 the "Groups" page, click on "OrchestraCities" and then click "New". Enter a name for
@@ -78,7 +91,7 @@ on any save button this time.
 
 ![](rsrc/auth/keycloak_roles.png)
 
-### Add users to User Groups or Service Groups
+### Add users to User Groups or Service Groups with Keycloak
 
 In order to give a User the Roles from the new User Group, and to give them
 permission for the new Service Group the User needs to become a member of those
@@ -93,6 +106,22 @@ now member of those Groups. Removing a User from a Group can be done similarly
 by selecting the Group they belong to and clicking "Leave".
 
 ![](rsrc/auth/keycloak_group_membership.png)
+
+### Create Groups and assign Roles and Users with the Portal
+
+As previously done when creating Users, log into the Portal and click on Admin,
+selecting Groups from the dropdown menu this time.
+
+![](rsrc/portal/groups.png)
+
+Clicking on Create Group will bring back a form to create a new Group, and assign
+to it the roles you want the Users belonging to it to have. Once created, clicking
+on the eye icon next to a Group's name will allow you to add Users to it by entering
+their username, and altering the roles if needed.
+
+It's also possible to create Service Path Groups from the Admin/Service Paths
+section of the Portal. It can be done directly from that page, and Users can be
+added just as with the User Groups.
 
 ### User API Authentication
 
@@ -455,14 +484,8 @@ More operations (and examples) related with the devices can be found
 
 ### Register a device using UI
 
-To register a new Device, access the [Portal][1] and log in with your Keycloak
-credentials.
-
-![](rsrc/auth/login.png)
-
-![](rsrc/portal/home.png)
-
-From the top navigation bar select "Device Groups" under "Device Management"
+To register a new Device, log once again into the [Portal][1] . From the top
+navigation bar select "Device Groups" under "Device Management"
 
 ![](rsrc/portal/device_groups.png)
 
@@ -484,9 +507,11 @@ using a configuration file listing them. For now, select
 ![](rsrc/portal/new_device.png)
 
 In the new Device form fill in the information for the Device you're registering
-and click submit. Make sure all required fields are filled in correctly.
+and click submit. Note that not all fields are mandatory, but make sure all required
+fields are filled in correctly.
 
-Your newly registered Device should now be visible in the Devices list.
+Your newly registered Device should now be visible in the Devices list upon
+successful creation. If an error occurs, make sure your fields are filled in properly.
 
 ## Data Management
 
@@ -598,7 +623,11 @@ the home page select "Entities" under "Data Management".
 
 From there, you'll be able to see all entities under the currently selected
 tenant, and filter by entity types and service paths (used by the device
-groups).
+groups). You can also filter entities by their last update timestamps. A small
+warning icon will be visible next to an entities if they haven't received any
+new updates in a while (by default 24 hours). Clicking on the eyeball icon next
+to an Entity will bring up detailed info about it, as well as allowing you to
+see the most recent historical data for an attributes.
 
 #### Querying Context Data from the API
 
