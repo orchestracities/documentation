@@ -1,8 +1,8 @@
 site_name: "Orchestra Cities"
 site_url: https://orchestracities.com
 site_description: 'Orchestra Cities Documentation'
-site_author: 'Orchestra Cities'
-copyright: 'Copyright &copy; 2019 - Orchestra Cities'
+site_author: 'Martel Innovate'
+copyright: 'Copyright &copy; 2020 - Martel Innovate'
 theme: readthedocs
 markdown_extensions: [toc,fenced_code]
 docs_dir: docs
