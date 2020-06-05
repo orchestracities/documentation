@@ -3,7 +3,7 @@
 Users are registered on Keycloak, and thanks to it are authenticated and authorized
 to perform actions against the APIs provided by Orchestra Cities. The following
 section describes how Keycloak is configured and utilised to accomplish this,
-alongside the Portal.
+alongside the Administration Portal.
 
 ## Security Configuration
 
@@ -18,12 +18,14 @@ client, and the backend authorises users via the resource-server client.
 
 ## Keycloak Clients
 
-The portal client in Keycloak is set up as a public client, meaning it doesn't
+The portal client in Keycloak is set up as public, meaning it doesn't
 require a secret to access. This client is used by the portal to authenticate users,
-like those logging into the Portal's frontend. Being public, it does not give
-control over client scopes and roles.
+like those logging into the Portal's frontend. Being public, it is not configured to
+give control over client scopes and roles.
 
-The resource-server client is a confidential client, meaning that its client-secret
+![Keycloak clients](rsrc/keycloak/keycloak_clients.png)
+
+The resource-server client is confidential, meaning that its client-secret
 is needed in order to authenticate against it. The portal's backend uses this client
 to authorise actions, like creating or deleting resources through the APIs.
 This is done by creating a list of roles for the resource-server client, which are
@@ -89,6 +91,8 @@ Tenant Groups are marked are such with the attributes "tenant" and "service"
 within Keycloak, whilst Service Path groups are marked with the attribute "servicePath".
 
 ## Keycloak mappers
+
+![Keycloak mappers](rsrc/keycloak/keycloak_mappers.png)
 
 In order to integrate other Orchestra Cities services, such as the Portal, a series
 of Script Mappers were created as part of Client Scopes. This was done in order
