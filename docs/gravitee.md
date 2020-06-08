@@ -1,4 +1,4 @@
-# Developer Portal APIs
+# Gravitee's Developer Portal
 
 The Developer Portal is where the Orchestra Cities APIs are registered, and the
 policies defined. The following section describes how these APIs are registered
@@ -8,18 +8,26 @@ in the Developer Portal and how policies and Oauth2 authorization are handled.
 
 1. The user requests a token for the client API from Keycloak. The token comes
    from a public client in Keycloak, so no secret is required to obtain a token.
-   However it's important to note that the public clients set up in Keycloak will
+   It's worth reminding that the public clients set up in Keycloak will
    limit what the given tokens enable users to do, such as user management operations.
    The user requests a specific scope with the request (e.g. entity:read). A list
-   of scopes is available in the **Keycloak Configuration** section of this documentation.
+   of scopes is available in the [**Keycloak Configuration**](/keycloak) section of this documentation.
 
 2. When then token is used, it is validated against Keycloak's confidential client
    (the resource-server client). The operation being attempted (e.g. creating an
-   entity under Tenant X and Servicepath Y)
-   is allowed if the correct scope is present and the Tenant and Servicepath allow
-   it.
+   entity under Tenant X and Servicepath Y) is allowed if the correct scope is
+   present and the Tenant and Servicepath allow it.
 
-## Oauth2 Resource
+3. The authorisation is carried out according to the contents of the token.
+
+## Protecting an API
+
+To set up and protect an API through the Gravitee Developer Portal, one must do
+two things after registering the API: defining an Oauth2 resource to authenticate
+and authorize users, and define for each path of the API which policies should be
+applied.
+
+### Oauth2 Resource
 
 ![Resources](rsrc/keycloak/gravitee_resources.png)
 
@@ -43,26 +51,34 @@ The configuration contains:
 - **Form param name**: token
 
 
-## Policies and Groovy
+### Policies
 
 ![Policies](rsrc/keycloak/gravitee_policies.png)
 
-For each API endpoint, policies are in place for each operation. Policies follow
-a basic syntax of resource:operation, so for the /entities endpoint for example
-we have:
+For each API endpoint, policies are in place for each operation. This enables API
+owners to decide exactly what scopes are required for users to perform different
+operations, whether is accessing, editing, creating or deleting resources.
+See the [**Keycloak Configuration**](/keycloak) section for more details on
+client scopes.
+
+Policies follow a basic syntax of resource:operation, so for the /entities endpoint
+of the Context Broker for example we have:
 
 - GET requires scope entity:read
 - PUT requires scope entity:write
 - POST requires scope entity:create
 - DELETE requires scope entity:delete
 
-In addition, there's a Groovy script in place for all operations that checks the Oauth
-payload for the Tenant and ServicePath, ensuring the operation being performed is
-authorised.
+In addition, there's a policy in the form of a Groovy script in place for all
+operations that checks the Oauth payload for the `Tenant` and `ServicePath`,
+ensuring the operation being performed is authorised.
 
 The script:
 
 ```groovy
+// The following scripts reads the token payload, extract the information about
+// tenants and service paths, and authorises the user if the requested tenant and
+// service paths are present. Returns 401 otherwise.
 import io.gravitee.policy.groovy.PolicyResult.State
 import groovy.json.JsonSlurper
 import groovy.json.JsonOutput
