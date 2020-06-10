@@ -5,50 +5,54 @@ Orchestra Cities resources through the APIs.
 
 ## Keycloak Clients
 
+![Keycloak clients](rsrc/keycloak/keycloak_clients.png)
+
 Keycloak allows the definition of clients to handle authorisation and authentication
 of users from different services in Orchestra Cities.
 
-With the Portal for instance there is a Keycloak client, the `portal` client, used
-by the Portal's frontend to authenticate a user, meaning it allows them to log into
-the Portal with their Keycloak account. In addition, it allows them to request
-scopes for the operations they want to perform, such as editing or creating resources.
+The clients defined in Keycloak for Orchestra Cities are as follows:
 
-The `portal` client in Keycloak is set up as a public client, meaning it requires no
-client-secret to access. Because of this, it is set up to not allow external users to modify
-roles and scopes attached to it. Another client is set up within Keycloak, called
-the `resource_server` client, that is internally used by Orchestra Cities services
-and APIs to authorise users, meaning verifying that those requesting to perform
-a certain operations (e.g. deleting a resource) are effectively allowed to do so.
+- ```account```: The default client responsible for exposing the details of a keycloak user.
+- ```admin-cli```: The default admin client, which exposed user details, and provides
+  the ability to create and alter users and groups in the Keycloak realm. The Admin
+  Portal uses it to handle users and groups management.
+- ```api```: A public client that can be used by the APIs.
+- ```broker```: The client used for auth by the Context Broker.
+- ```carto```: The client used for auth by Carto.
+- ```crate```: The client used for auth by the Crate DB.
+- ```dashboard```: The client used for auth by the dashboards service (Grafana).
+- ```dataflow```: The client used for auth by the Dataflow Manager.
+- ```elk```: The client used for auth by the Elastic Search service.
+- ```gravitee```: The client used for auth by the API Manager (Gravitee's Developer Portal).
+- ```kubernetes```: The client used for auth by the Kubernetes cluster.
+- ```nosql```: The client used for auth by the NoSQL DB.
+- ```oracle-datacollector```: The client used for auth by the Oracle Data Collectors.
+- ```pgadmin```: The client used for auth by the Postgres Admin Panel.
+- ```portal```: The public client used for auth by the Admin Portal's frontend.
+- ```realm-management```: The default client used by Keycloak for management of the current
+  realm.
+- ```resource_server```: The client whose purpose is to contain the various scopes for
+  resource access (creating, deleting, editing, viewing resources).
+- ```security-admin-console```: The default Keycloak client for the security admin
+  console of Keycloak.
+- ```urbo```: The client used for auth of the Urbo service.
+
+The `resource_server` in particular is the central element used to govern access to
+the Orchestra Cities resources by its various services. It's where the scopes that
+user groups can include are defined, thus providing decoupling between the
+authorisation and authentication of the users.
+
+With the Admin Portal in particular: the Keycloak client `portal` is used
+to authenticate a user, meaning it allows them to log in the web frontend interface
+with their Keycloak account. In addition, it allows them to request scopes for
+the operations they want to perform, such as editing or creating resources. To
+authorise the user's actions, it's the `resource_server` client that is used.
 
 ![Keycloak and Portal diagram](rsrc/keycloak/portal_keycloak_diagram.png)
 
-The `resource_server` is essentially the central element used to govern access to
-the Orchestra Cities resources by its various services. Public clients, such as the
-`portal` and `api` clients in Keycloak, are used to authenticate users. But it's
-then the `resource_server` that takes care of actually authorising their actions,
-effectively creating a security separation layer between them.
-
-The portal client in Keycloak is set up as public, meaning it doesn't
-require a secret to access. This client is used by the portal to authenticate users,
-like those logging into the Portal's frontend. Being public, it is not configured to
-give control over client scopes and roles.
-
-![Keycloak clients](rsrc/keycloak/keycloak_clients.png)
-
-The resource-server client is confidential, meaning that its client-secret
-is needed in order to authenticate against it. The portal's backend uses this client
-to authorise actions, like creating or deleting resources through the APIs.
-This is done by creating a list of roles for the resource-server client, which are
-then assigned to groups the users can belong to, which in term define the actions
-the users are allowed to perform.
-
-To perform actions that involve altering Keycloak Users and Groups from
-the Keycloak API, the Portal does have access to the default admin client within
-a Keycloak realm (by default named admin-cli).
-
 ## Client Scopes
 
-The following roles are created in the resource-server client, and are assigned
+The following roles are created in the resource_server client, and are assigned
 as optional client scopes:
 
 - **entity:read**, for reading/GET operations of Context Broker entities
@@ -79,7 +83,7 @@ as optional client scopes:
 - **user:write**, for editing/PUT operations of users in Keycloak
 - **user:create**, for creating/POST operations of users in Keycloak
 - **user:delete**, for deleting/DELETE operations of users in Keycloak
-- **urbo:roles**, for accessing roles in Keycloak
+- **urbo:roles**, for accessing roles in Urbo
 
 These represent both the resource being acted upon, and the action being
 taken: reading, writing, creating and deleting. In order for a user to be authorised
@@ -90,22 +94,71 @@ The default client scopes roles and tenants are also assigned to both resource_s
 and the portal client, the latter containing script mappers described in the
 Keycloak Mappers section below.
 
-## Tenants and Groups in Keycloak
+## Multitenancy in Keycloak
 
 Tenants in Keycloak are represented as Groups. Subgroups of these Tenant Groups
 represent both the Service Paths used by the Orchestra Cities APIs, and the
-larger "roles" that users can have within Tenants (Admin, Developer, User, Device).
+larger roles that users can have within Tenants.
+
+This entire setup is done in order to provide multitenancy support, whilst
+keeping everything in a single Keycloak realm. Though realms are the intended way
+to handle multitenancy within Keycloak, clients cannot be shared across multiple
+realms. This means that if more than one realm was used, one per Tenant, then each
+realm would need its own clients, and thus multiple APIs would be needed as well.
+By using groups instead, this issue is avoided.
+
+## Tenants and Groups in Keycloak
 
 ![Keycloak and Portal diagram](rsrc/keycloak/tenant_groups.png)
 
-Tenant Groups are marked are such with the attributes "tenant" and "service"
+Keycloak Tenant Groups are marked are such with the attributes "tenant" and "service"
 within Keycloak, whilst Service Path groups are marked with the attribute "servicePath".
 
-This entire setup is done in order to provide multy-tenancy support, whilst
-keeping everything in a single Keycloak realm. Keycloak can easily track what tenants
-users have a role in by having them registered to the associated subgroup (e.g. Admin of
-City_X), and the scopes these subgroups allow (e.g. viewing/editing/creating/deleting
-devices registered and so on).
+Keycloak can easily track which tenants users have a role in by having them registered
+to the associated subgroup (e.g. Admin of City_X), thus allowing the scopes these subgroups
+possess (e.g. viewing/editing/creating/deleting devices registered and so on).
+
+The default Groups that should exist as subgroup of each tenant group:
+
+- **Admin**: The group that represents the administrators of the Tenant. This Group
+  is mandatory, as there needs to be some sort of administrator for each Tenant.
+  It's particularly important for the Admin Portal, as without at least one Admin
+  it would be impossible to create new groups or add users to them outside of the
+  Keycloak Admin Console.
+- **Developer**: A developer within the Tenant, able to create, delete and edit
+  resources as well as view them.
+- **User**: A user of the platform, meaning they should be able to view resources,
+  but perhaps not create new ones, alter or delete them.
+- **Device**: This represents not a physical user, but rather a Device, sending
+  data to something like the Context Broker for instance.
+
+Other Groups can be created, and the scopes customised for each, enabling administrators
+to decide how people and devices interact with the components of the platform and
+their resources.
+
+## Creating a new Tenant
+
+Creating a new Tenant is simply a matter of creating a new root level Group from the
+Keycloak Admin Console, and adding the following attributes to the Group:
+
+- ```service=true```
+- ```tenant=true```
+
+At least the Admin subgroup needs to be created under the Tenant group. This subgroup
+needs the ```data-admin``` realm role, as well as the ```resource_server``` client roles
+that enable the management of users and groups for this Tenant:
+
+- ```user:read```
+- ```user:write```
+- ```user:create```
+- ```user:delete```
+- ```group:read```
+- ```group:write```
+- ```group:create```
+- ```group:delete```
+
+From there, one can create new subgroups for user roles, as well as subgroups for
+service paths, as explained in the previous section.
 
 ## Keycloak mappers
 
