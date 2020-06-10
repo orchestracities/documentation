@@ -16,17 +16,14 @@ The clients defined in Keycloak for Orchestra Cities are as follows:
 - ```admin-cli```: The default admin client, which exposed user details, and provides
   the ability to create and alter users and groups in the Keycloak realm. The Admin
   Portal uses it to handle users and groups management.
-- ```api```: A public client that can be used by the APIs.
-- ```broker```: The client used for auth by the Context Broker.
-- ```carto```: The client used for auth by Carto.
-- ```crate```: The client used for auth by the Crate DB.
+- ```api```: A public client that can be used by NGSI APIs such as Context Broker and QuantumLeap.
+- ```crate```: The client used for auth by the Crate DB Admin Interface.
 - ```dashboard```: The client used for auth by the dashboards service (Grafana).
-- ```dataflow```: The client used for auth by the Dataflow Manager.
-- ```elk```: The client used for auth by the Elastic Search service.
+- ```dataflow```: The client used for auth by the StreamSet Data Collector.
+- ```elk```: The client used for auth by the Kibana Elastic Search GUI.
 - ```gravitee```: The client used for auth by the API Manager (Gravitee's Developer Portal).
 - ```kubernetes```: The client used for auth by the Kubernetes cluster.
-- ```nosql```: The client used for auth by the NoSQL DB.
-- ```oracle-datacollector```: The client used for auth by the Oracle Data Collectors.
+- ```nosql```: The client used for auth by the MongoDB Admin UI.
 - ```pgadmin```: The client used for auth by the Postgres Admin Panel.
 - ```portal```: The public client used for auth by the Admin Portal's frontend.
 - ```realm-management```: The default client used by Keycloak for management of the current
@@ -83,7 +80,7 @@ as optional client scopes:
 - **user:write**, for editing/PUT operations of users in Keycloak
 - **user:create**, for creating/POST operations of users in Keycloak
 - **user:delete**, for deleting/DELETE operations of users in Keycloak
-- **urbo:roles**, for accessing roles in Urbo
+- **urbo:roles**, for obtaining Urbo's roles in the Access Token
 
 These represent both the resource being acted upon, and the action being
 taken: reading, writing, creating and deleting. In order for a user to be authorised
