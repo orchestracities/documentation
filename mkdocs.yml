@@ -13,6 +13,7 @@ nav:
       - 'Overview': 'security.md'
       - 'Auth Provider (Keycloak)': 'keycloak.md'
       - 'Api Management (Gravitee)': 'gravitee.md'
+      - 'The Admin Portal': 'portal.md'
     - 'Tutorial': 'tutorial.md'
     - 'Build': 'build.md'
     - 'How to contribute': 'contribute.md'

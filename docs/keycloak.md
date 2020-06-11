@@ -80,12 +80,20 @@ as optional client scopes:
 - **user:write**, for editing/PUT operations of users in Keycloak
 - **user:create**, for creating/POST operations of users in Keycloak
 - **user:delete**, for deleting/DELETE operations of users in Keycloak
-- **urbo:roles**, for obtaining Urbo's roles in the Access Token
 
 These represent both the resource being acted upon, and the action being
 taken: reading, writing, creating and deleting. In order for a user to be authorised
 to perform a certain action, they need to belong to a Keycloak Group that has the
 corresponding role, where said Group is subgroup of the relevant Tenant.
+
+In addition, the following client scopes are created for the whole realm:
+
+- **tenants**, for obtaining the full list of tenants and their subgroups. Assigned
+  as a default scope to the `portal` client
+- **tenant-names**, for obtaining just the list of tenant names. Assigned
+  as a default scope to the `gravitee` client
+- **urbo:roles**, for obtaining Urbo's roles in the Access Token. Assigned
+  as a default scope to the `urbo` client
 
 The default client scopes roles and tenants are also assigned to both resource_server
 and the portal client, the latter containing script mappers described in the
