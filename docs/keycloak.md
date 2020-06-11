@@ -575,3 +575,11 @@ function authenticate(context) {
     context.failure(AuthenticationFlowError.INVALID_USER);
 }
 ```
+
+The clients that need to override their default authentication flows are:
+
+- `elk`, Required Admin Role Flow overrides Browser Flow
+- `crate`, Required Admin Role Flow overrides Browser Flow
+- `dataflow`, Required Admin Role Flow overrides Browser Flow
+- `nosql`, Required Admin Role Flow overrides Browser Flow
+- `pgadmin`, Required Admin Role Flow overrides Browser Flow
