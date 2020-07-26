@@ -1,0 +1,235 @@
+version: '3'
+
+services:
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:${ELASTIC_VERSION:-6.3.1}
+    container_name: gio_apim_elasticsearch
+    restart: always
+    volumes:
+      - dataelasticsearch:/usr/share/elasticsearch/data
+    environment:
+      - http.host=0.0.0.0
+      - transport.host=0.0.0.0
+      - xpack.security.enabled=false
+      - xpack.monitoring.enabled=false
+      - cluster.name=elasticsearch
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile: 65536
+    networks:
+      - storage
+
+  gateway:
+    image: graviteeio/gateway:${APIM_VERSION:-1}
+    container_name: gio_apim_gateway
+    restart: always
+    ports:
+      - "8082:8082"
+    depends_on:
+      - mongodb
+      - elasticsearch
+    volumes:
+      - ./logs/apim-gateway:/opt/graviteeio-gateway/logs
+    environment:
+      - gravitee_management_mongodb_uri=mongodb://mongodb:27017/gravitee?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
+      - gravitee_ratelimit_mongodb_uri=mongodb://mongodb:27017/gravitee?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
+      - gravitee_reporters_elasticsearch_endpoints_0=http://elasticsearch:9200
+    networks:
+      - storage
+      - frontend
+
+  management_api:
+    image: graviteeio/management-api:${APIM_VERSION:-1}
+    container_name: gio_apim_management_api
+    restart: always
+    ports:
+      - "8083:8083"
+    links:
+      - mongo
+      - elasticsearch
+    depends_on:
+      - mongo
+      - elasticsearch
+    volumes:
+      - ./logs/apim-management-api:/opt/graviteeio-management-api/logs
+    environment:
+      - gravitee_management_mongodb_uri=mongodb://mongo:27017/gravitee?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
+      - gravitee_analytics_elasticsearch_endpoints_0=http://elasticsearch:9200
+    networks:
+      - storage
+      - frontend
+
+  management_ui:
+    image: graviteeio/management-ui:${APIM_VERSION:-1}
+    container_name: gio_apim_management_ui
+    restart: always
+    ports:
+      - "8084:80"
+    depends_on:
+      - management_api
+    environment:
+      - MGMT_API_URL=http:\/\/localhost:8083\/management\/
+    volumes:
+      - ./logs/apim-management-ui:/var/log/nginx
+    networks:
+      - frontend
+
+  orion:
+    image: fiware/orion:${ORION_VERSION:-2.0.0}
+    ports:
+      - "1026:1026"
+    command: -logLevel DEBUG -noCache -dbhost mongo
+    depends_on:
+      - mongo
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://0.0.0.0:1026/version"]
+      interval: 1m
+      timeout: 10s
+      retries: 3
+    networks:
+      - storage
+
+  mongo:
+    image: mongo:3.2.19
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodata:/data/db
+    networks:
+      - storage
+
+  quantumleap:
+    image: ${QL_IMAGE:-smartsdk/quantumleap}
+    ports:
+      - "8668:8668"
+    depends_on:
+      - mongo
+      - orion
+      - crate
+    environment:
+      - CRATE_HOST=${CRATE_HOST:-crate}
+      - USE_GEOCODING=True
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    networks:
+      - storage
+
+  crate:
+    image: crate:${CRATE_VERSION:-3.1.2}
+    command: crate -Clicense.enterprise=false -Cauth.host_based.enabled=false
+      -Ccluster.name=democluster -Chttp.cors.enabled=true -Chttp.cors.allow-origin="*"
+    ports:
+      # Admin UI
+      - "4200:4200"
+      # Transport protocol
+      - "4300:4300"
+    volumes:
+      - cratedata:/data
+    networks:
+      - storage
+
+  iot-manager:
+    image: telefonicaiot/iotagent-manager:latest
+    environment:
+      - IOTA_MONGO_HOST=mongo
+    ports:
+      - "8082:8082"
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-worldmap-panel
+    depends_on:
+      - crate
+    networks:
+      - frontend
+
+  redis:
+    image: redis
+    deploy:
+      # Scaling Redis requires some extra work.
+      # See https://get-reddie.com/blog/redis4-cluster-docker-compose/
+      replicas: 1
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+    networks:
+      - storage
+
+  portal:
+    image: orchestracities/portal:dev
+    depends_on:
+      - portaldb
+    environment:
+      - PORTAL_URL=http://localhost:8000
+      - DJANGO_SETTINGS_MODULE=portal.settings.production
+      - KEYCLOAK_FRONTEND_CLIENT_ID=portal
+      - KEYCLOAK_OIDC_CLIENT_ID=resource_server
+      - KEYCLOAK_OIDC_CLIENT_SECRET=006ce147-dd78-42db-a78a-1b5b0f3a723f
+      - KEYCLOAK_BASE=https://auth.s.orchestracities.com/auth
+      - KEYCLOAK_REALM=default
+      - KEYCLOAK_ADMIN_URI=https://auth.s.orchestracities.com/auth/
+      - KEYCLOAK_ADMIN_CLIENT_ID=admin-cli
+      - KEYCLOAK_ADMIN_CLIENT_SECRET=6fad563f-8e1c-4cb7-9ade-9734909dfb90
+      - KEYCLOAK_ADMIN_USERNAME=portaladmin
+      - KEYCLOAK_ADMIN_PASSWORD=portaladminpass
+      - KEYCLOAK_OIDC_ENDPOINT=https://auth.s.orchestracities.com/auth
+      - KEYCLOAK_OIDC_REALM=default
+      - KEYCLOAK_OIDC_AUTHORIZATION_ENDPOINT=https://auth.s.orchestracities.com/auth/realms/default/protocol/openid-connect/auth
+      - KEYCLOAK_OIDC_TOKEN_ENDPOINT=https://auth.s.orchestracities.com/auth/realms/default/protocol/openid-connect/token
+      - KEYCLOAK_OIDC_USER_ENDPOINT=https://auth.s.orchestracities.com/auth/realms/default/protocol/openid-connect/userinfo
+      - KEYCLOAK_OIDC_JWKS_ENDPOINT=https://auth.s.orchestracities.com/auth/realms/default/protocol/openid-connect/certs
+      - PORTAL_DB_HOST=portaldb
+      - PORTAL_DB_PORT=5432
+      - PORTAL_DB_NAME=portal
+      - PORTAL_DB_USER=portal
+      - PORTAL_DB_PASSWORD=password
+      - IOT_MANAGER_URI=http://iot-manager:8082
+      - CONTEXT_BROKER_URI=http://orion:1026
+      - QUANTUMLEAP_URI=http://quantumleap:8668
+      - GRAFANA_URL=#
+      - KEYCLOAK_DASHBOARD_URL=#
+      - NIFI_URL=#
+      - CKAN_URL=#
+      - KUBERNETES_DASHBOARD_URL=#
+      - WEAVE_SCOPE_URL=#
+      - KIBANA_URL=#
+      - NO_SQUL_URL=#
+      - GRAVITEE_URL=#
+      #- UI_CUSTOM_CSS_URL=https://raw.githubusercontent.com/orchestracities/shared-resources/master/oc-portal/css/ekz_css.css
+      #- UI_CUSTOM_LOGO_URL=https://github.com/orchestracities/shared-resources/raw/master/oc-portal/images/ekz_logo.png
+    ports:
+      - "8000:8000"
+    networks:
+      - storage
+      - frontend
+
+  portaldb:
+    image: postgres
+    environment:
+      - POSTGRES_USER=portal
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=portal
+
+volumes:
+  portal_db:
+  portal_staticfiles:
+  portal_mediafiles:
+  mongodata:
+  cratedata:
+  redisdata:
+  dataelasticsearch:
+
+networks:
+  frontend:
+    name: frontend
+  storage:
+    name: storage
