@@ -8,13 +8,12 @@ markdown_extensions: [toc,fenced_code]
 docs_dir: docs
 nav:
     - Home: 'index.md'
-    - 'Introduction': 'introduction.md'
-    - 'Architecture': 'architecture.md'
-    - 'Deploy an example instance':
-      - 'Deploy': 'deploy.md'
-      - 'Configure':
-        - 'Auth Provider (Keycloak)': 'keycloak.md'
-        - 'Api Management (Gravitee)': 'gravitee.md'
-        - 'Admin Portal': 'portal.md'
-    - 'Tutorial': 'tutorial.md'
-    - 'How to contribute': 'contribute.md'
+    - '1. Platform overview': 'introduction.md'
+    - '2. Architecture': 'architecture.md'
+    - '3. Deploy an example instance': 'deploy.md'
+    - '4. Security configuration':
+      - '1. Auth Provider (Keycloak)': 'keycloak.md'
+      - '2. Api Management (Gravitee)': 'gravitee.md'
+      - '3. Admin Portal': 'portal.md'
+    - '5. Tutorial': 'tutorial.md'
+    - '6. How to contribute': 'contribute.md'
