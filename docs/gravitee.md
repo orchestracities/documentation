@@ -1,4 +1,4 @@
-# Gravitee's Developer Portal
+# 4.2. Api Management (Gravitee)
 
 The Developer Portal is where the Orchestra Cities APIs are registered, and the
 policies defined. The following section describes how these APIs are registered

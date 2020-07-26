@@ -1,4 +1,4 @@
-# How to deploy your own instance
+# 3. Deploy an example instance
 
 In this repository you find [scripts](../deploy/) and a reference
 [docker compose](../deploy/docker-compose.yaml) file that allows

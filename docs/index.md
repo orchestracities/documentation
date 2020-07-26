@@ -1,6 +1,6 @@
 *Latest Update: 2020-07-26 13:36:41*
 
-# Welcome
+# 0. Introduction
 
 This is the official documentation of **Orchestra Cities**.
 

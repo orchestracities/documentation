@@ -1,4 +1,4 @@
-# How to contribute
+# 6. How to contribute
 
 ## Components
 

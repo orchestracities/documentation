@@ -1,4 +1,4 @@
-# Architecture
+# 2. Architecture
 
 The platform, as depicted in the picture above, is composed of different
 microservices that are orchestrated using state-of-the-art solutions

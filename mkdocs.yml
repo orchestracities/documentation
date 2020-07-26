@@ -12,7 +12,7 @@ markdown_extensions:
 docs_dir: docs
 nav:
     - '0. Introduction': 'index.md'
-    - '1. Platform overview': 'introduction.md'
+    - '1. Platform overview': 'overview.md'
     - '2. Architecture': 'architecture.md'
     - '3. Deploy an example instance': 'deploy.md'
     - '4. Security configuration':

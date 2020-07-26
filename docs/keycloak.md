@@ -1,4 +1,4 @@
-# Keycloak
+# 4.1. Auth Provider (Keycloak)
 
 Keycloak is used to both authenticate and authorise users who wish to access the
 Orchestra Cities resources through the APIs.
