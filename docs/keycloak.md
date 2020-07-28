@@ -1,9 +1,9 @@
-# Keycloak
+# 4.1 Auth Provider (Keycloak)
 
 Keycloak is used to both authenticate and authorise users who wish to access the
 Orchestra Cities resources through the APIs.
 
-## Keycloak Clients
+## 4.1.1 Keycloak Clients
 
 ![Keycloak clients](rsrc/keycloak/keycloak_clients.png)
 
@@ -47,7 +47,7 @@ authorise the user's actions, it's the `resource_server` client that is used.
 
 ![Keycloak and Portal diagram](rsrc/keycloak/portal_keycloak_diagram.png)
 
-## Client Scopes
+## 4.1.2 Client Scopes
 
 The following roles are created in the resource_server client, and are assigned
 as optional client scopes:
@@ -99,7 +99,7 @@ The default client scopes roles and tenants are also assigned to both resource_s
 and the portal client, the latter containing script mappers described in the
 Keycloak Mappers section below.
 
-## Multitenancy in Keycloak
+## 4.1.3 Multitenancy in Keycloak
 
 Tenants in Keycloak are represented as Groups. Subgroups of these Tenant Groups
 represent both the Service Paths used by the Orchestra Cities APIs, and the
@@ -112,7 +112,7 @@ realms. This means that if more than one realm was used, one per Tenant, then ea
 realm would need its own clients, and thus multiple APIs would be needed as well.
 By using groups instead, this issue is avoided.
 
-## Tenants and Groups in Keycloak
+##  4.1.4 Tenants and Groups in Keycloak
 
 ![Keycloak and Portal diagram](rsrc/keycloak/tenant_groups.png)
 
@@ -141,7 +141,7 @@ Other Groups can be created, and the scopes customised for each, enabling admini
 to decide how people and devices interact with the components of the platform and
 their resources.
 
-## Creating a new Tenant
+##  4.1.5 Creating a new Tenant
 
 Creating a new Tenant is simply a matter of creating a new root level Group from the
 Keycloak Admin Console, and adding the following attributes to the Group:
@@ -165,7 +165,7 @@ that enable the management of users and groups for this Tenant:
 From there, one can create new subgroups for user roles, as well as subgroups for
 service paths, as explained in the previous section.
 
-## Keycloak mappers
+## 4.1.6 Keycloak mappers
 
 ![Keycloak mappers](rsrc/keycloak/keycloak_mappers.png)
 
@@ -546,7 +546,7 @@ function isTenant(group){
 token.setOtherClaims("tenants", tenants);
 ```
 
-## Protecting Web applications that don't support natively OIDC/OAUTH
+##  4.1.7 Protecting Web applications that don't support natively OIDC/OAUTH
 
 Not all web applications natively support OIDC or OAUTH, which is what Keycloak
 uses for authentication. In order to protect these web applications, we use an

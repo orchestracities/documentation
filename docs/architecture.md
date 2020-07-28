@@ -1,68 +1,4 @@
-# Platform Overview
-
-## Concept
-
-The Smart City solutions market is mostly driven by large players that
-rely on proprietary technologies. Only recently have a small niche of
-solutions been adopting an Open approach. The forerunner technology in
-this niche is [FIWARE](https://www.fiware.org), the most mature Open
-Source framework available today dealing with requirements for Smart Cities.
-The Orchestra Cities concept takes on FIWARE principles and strives to push
-them further.
-
-![Openness as Orchestra Cities key pillar](rsrc/overview/OC_isometric_open.png "Openness as key pillar")
-
-FIWARE is designed around the concept of Openness. Concretely this
-means:
-
--   Open Standards
-
--   Open Data Models
-
--   Open APIS
-
-Orchestra Cities embraces the above principles and aims to extend them
-to enable City-to-City collaboration and Citizens-to-City collaboration.
-
-Specifically, what does it mean? Orchestra Cities aims at building a
-collaborative space for shaping a sustainable and participatory future
-for our cities, where:
-
--   Citizens can share data from their devices with other citizens or
-    with the city
-
--   Businesses can easily build services on top of APIs that are shared
-    across different cities
-
--   Cities can benefit from data published by other cities to create
-    analysis, comparisons and forecast
-
-Orchestra Cities differs from other platforms in that it believes the
-most efficient and effective way to achieve its goals is to support
-multiple cities in a single platform. This approach brings several
-advantages in terms of: costs, scalability and modularity.
-
-### Key Technology Benefits
-
--   Support the migration from vertical data silos to a unified data
-    space for a single integrated view over the city
-
--   A collaborative space where different cities can share data and
-    services, while retaining control on their own data
-
--   Modular and flexible approach where each city can reserve just the
-    needed services and quotas
-
--   Reduced ownerships costs thanks to the possibility of sharing the
-    platform among different cities
-
--   Leverage Open Standards and Open Source code, thus building on the
-    work of a large European and global community
-
--   Allow citizens and businesses to take part on the city services
-    co-creation process
-
-## Platform Overview
+# 2. Architecture
 
 The platform, as depicted in the picture above, is composed of different
 microservices that are orchestrated using state-of-the-art solutions
@@ -70,19 +6,8 @@ such as Docker and Kubernetes.
 
 ![Orchestra Cities Architecture](rsrc/overview/architecture.png "Orchestra Cities Architecture")
 
-Orchestra Cities functionalities available as of today include:
 
--   Security Management.
-
--   Device Management
-
--   Data Management
-
--   Dashboard Management
-
--   Data Integration Management
-
-### Security
+## 2.1 Security
 
 The core of the security management is based on [OIDC](https://openid.net/connect/)
 and [OAUTH 2.0](https://oauth.net/2/) standards. The solution supports Identity,
@@ -107,14 +32,6 @@ access by each tenant (e.g. a city) to its specific data. Moreover, it
 empowers different users to have access to different city data spaces
 with the same account.
 
-The open source solution adopted for the Identity and Access Management
-is [Keycloak](https://www.keycloak.org/), the market-leading open source
-identity and access management solution developed by RedHat.
-
-The adopted open source solution for API Management is [gravitee.io](https://gravitee.io/).
-To apply access control to APIs, Gravitee offers a flexible plugin
-mechanism to implement access control policies.
-
 ![Security Flow](rsrc/overview/security.png "Security Flow")
 
 The process works as follow:
@@ -132,18 +49,40 @@ The process works as follow:
 In case of success, the call will be forwarded to the API in the backend
 (if not, the user will be returned a 401 “Not Authorized” response).
 
-### Data Management
+### 2.1.1 APIs
 
-The core of the data management is a “data bus” collecting data from the
+* [Keycloak Auth API](https://www.keycloak.org/docs/latest/authorization_services/#_service_overview)
+* [Keycloak Admin API](https://www.keycloak.org/docs-api/5.0/rest-api/index.html)
+* [Gravitee API](https://docs.gravitee.io/apim/1.x/management-api/1.30/)
+
+### 2.1.2 Software used to realise this layer
+
+* The open source solution adopted for the Identity and Access Management
+is [Keycloak](https://www.keycloak.org/), the market-leading open source
+identity and access management solution developed by RedHat.
+
+    * Keycloak supports either [MySQL](https://www.mysql.com/)
+      or [PostgreSQL](https://www.postgresql.org/) as backends.
+
+
+* The adopted open source solution for API Management is [gravitee.io](https://gravitee.io/).
+To apply access control to APIs, Gravitee offers a flexible plugin
+mechanism to implement access control policies.
+
+    * Gravitee requires [MongoDB](https://www.mongodb.com/) - for configuration -
+      and [ElasticSearch](https://www.elastic.co/elasticsearch/) - for logs -
+      as backends.
+
+## 2.2 Data Management
+
+The core of the data management is a Context Broker API collecting data from the
 different sources and forwarding them to the different backend APIs
-based on the specific scenarios. This “data bus” is provided by
-[Orion Context Broker](https://fiware-orion.readthedocs.io/en/master/),
-the reference implementation for a NGSIv2 broker.
+based on the specific scenarios.
 All data used in the platform transits through it: IoT Devices data,
 External services data, Platform generated data.
 
-Orion Context Broker supports different interaction modes. Services can
-provide data to the Orion Context Broker with the following modality:
+Context Broker supports different interaction modes. Services can
+provide data to the Context Broker with the following modality:
 
 -   Data Push: services send data to it.
 
@@ -167,13 +106,8 @@ Orion Context Broker that can be used to generate Data Subscriptions.
 
 The other core component of the Data Management layer is the Timeseries
 API. The role of this component is to store all the historical data of a
-given entity (Orion Context Broker stores only the current value in time
-of a data). The Timeseries API is provided by [Quantum Leap](https://quantumleap.readthedocs.io/en/latest/),
-an NGSIv2 compliant time series API. Quantum Leap supports as backend
-CrateDB, which is also supported by Grafana (see next section) to
-generate dashboards. QuantumLeap supports a variety of queries
-(including geographical-based), facilitating the access to historical
-data by services in need of working on batch data sets.
+given entity (Context Broker stores only the current value in time
+of a data).
 
 ![Data Management Flow](rsrc/overview/data_management.png "Data Management Flow")
 
@@ -193,7 +127,31 @@ In short, the process will work as follows:
 1.  The subscribed service processes it using its logic (in the case of
     Quantum Leap, it stores the received data in CrateDB).
 
-### Device Management
+### 2.2.1 Software used to realise this layer
+
+* The Context Broker API is provided by
+[Orion](https://fiware-orion.readthedocs.io/en/master/),
+the reference implementation for a NGSIv2 Context Broker.
+
+    * Orion requires [MongoDB](https://www.mongodb.com/) as backend.
+
+
+* The Timeseries API is provided by [Quantum Leap](https://quantumleap.readthedocs.io/en/latest/),
+an NGSIv2 compliant time series API. Quantum Leap supports as backend
+CrateDB, which is also supported by Grafana (see next section) to
+generate dashboards. QuantumLeap supports a variety of queries
+(including geographical-based), facilitating the access to historical
+data by services in need of working on batch data sets..
+
+    * Quantum Leap supports [CrateDB](https://crate.io/)
+      or [Timescale](https://www.timescale.com/) as backends.
+
+### 2.2.2 APIs
+
+* [Orion API](https://fiware.github.io/specifications/ngsiv2/stable/)
+* [QuantumLeap API](https://app.swaggerhub.com/apis/smartsdk/ngsi-tsdb)
+
+## 2.3 Device Management
 
 To manage the IoT devices, Orchestra Cities leverages FIWARE stack and
 hence the NGSIv2 API and data format. FIWARE offers a wide range of
@@ -201,7 +159,7 @@ so-called IoT Agents. Each IoT Agent enables different transport and
 message protocols to be used to connect IoT Devices. Orchestra Cities
 covers all protocols supported by FIWARE (UL, JSON, LOWARAN), being the
 recommended one UL, a very lightweight message protocol (e.g.
-attribute1|value1|attribute2|value2 becomes t|10|s|true|l|78.8) that
+`attribute1|value1|attribute2|value2` becomes `t|10|s|true|l|78.8`) that
 supports MQTT, AMQP or HTTP transports. The IoT Agent role is to map low
 level messages generated by the device to higher level information used
 at the so-called application layer and to forward the structured and
@@ -233,25 +191,35 @@ work as follow:
 
 1.  Finally, the Agent sends the NGSIv2 payload to the Context Broker
 
-### Dashboard Management
+### 2.3.1 Software used to realise this layer
 
-To allow the creation of custom dashboards, we use an open-source
-dashboard engine called [Grafana](https://grafana.com/), an open platform
-for beautiful analytics and monitoring. This technology integrates a set of
-“panels” that provides support for rendering objects such as lines, points, bars
-and heat graphs, basic maps with info pointers, picture panels and more
-useful panels to display any kind of data. It also includes a collection
-of data-source plugins, that allows it to integrate Grafana with
-different databases and backends such as Crate (the back-end of Quantum
-Leap), JSON, and Google calendar. Grafana aims to provide an easy and
-intuitive way for public officers to monitor different KPIs of their
-city. This dashboard can run on multiple end-user devices without
-installation and provides good responsiveness for the dimensions of
-desktop screens, mobile phones and tablets. Also, it can show online
-historical data while filtering and sorting data dynamically. The data
-can be zoomed in to have fine-grained views of values or the same data
-can be seen in a Tabular format, allowing users to sort data by
-different column values. The ability to present maps with information
+* IoT Agent Manager, an API proxy that allows to access different services
+  implementing FIWARE IoT Agent configuration APIs.
+
+    * [IoT Agent Manager](https://github.com/telefonicaid/iotagent-manager) requires [MongoDB](https://www.mongodb.com/) as backend.
+
+
+* IoT Agents, a set of services supporting integrate of sensors with
+Context Broker. 
+
+    * IoT Agents requires [MongoDB](https://www.mongodb.com/) as backend.
+
+### 2.3.2 APIs
+
+* [IoT Agent config API](https://iotagent-node-lib.readthedocs.io/en/latest/api/index.html)
+* [IoT Agent UL API](https://fiware-iotagent-ul.readthedocs.io/en/latest/usermanual/index.html#api-overview)
+* [IoT Agent JSON API](https://fiware-iotagent-json.readthedocs.io/en/latest/usermanual/index.html)
+
+## 2.4 Dashboard Management
+
+Orchestra Cities allows creation of dashboards to monitor and visualise
+data. Dashboards include a set of “panels” that provides support for rendering
+objects such as lines, points, bars and heat graphs, basic maps with
+info pointers, picture panels and more useful panels to display
+any kind of data. 
+Dashboards can show online historical data while filtering and sorting data dynamically. The data can be zoomed in to have fine-grained views of values
+or the same data can be seen in a Tabular format, allowing users to sort
+data by different column values. The ability to present maps with information
 points allows cities to visualize in real-time all the data that is
 being collected by the sensors. Besides that, cities are able to define
 actions based on the information and events of the dashboards and create
@@ -259,19 +227,44 @@ alerts based on data thresholds; for example set an alert when a waste
 bin is on fire. Dashboards can be easily shared, customized and embedded
 in other tools.
 
-### Analytics
+Dashboards can run on multiple end-user devices without
+installation and provides good responsiveness for the dimensions of
+desktop screens, mobile phones and tablets. 
+
+### 2.4.1 Software used to realise this layer
+
+Dashboards can be realised with two solutions:
+
+* [Grafana](https://grafana.com/), an open platform
+  for beautiful analytics and monitoring. Grafana includes a collection
+  of data-source plugins, that allows it to integrate Grafana with
+  different databases and backends such as Timescale and CrateDB
+  (the back-ends of QuantumLeap), JSON, and Google calendar.
+
+* [Urbo](https://github.com/GeographicaGS/UrboCore-www), an open source
+  framework to develop elegant and interactive dashboards.
+
+
+### 2.4.2 APIs
+
+* [Grafana API](https://grafana.com/docs/grafana/latest/http_api/)
+* [URBO API](https://github.com/GeographicaGS/UrboCore-api/tree/master/docs/reference)
+
+## 2.5 Analytics
 
 While the dashboard can provide simple real-time analytics, for more
-complex tasks we integrated an Apache Spark cluster in the platform.
-The cluster, integrated to the Data Management layer, enables the
-analysis of a data set (e.g. Weather forecast) whether they are
+complex tasks different solutions should be used. Depending on the
+use case, we recommend to leverage Apache Spark or other solutions.
+The different solutions, integrated to the Data Management layer, can
+analyse data sets (e.g. Weather forecast) whether they are
 real-time and/or historical data.
 
-### Data Integration
+### 2.6 Data Integration
 
-To integrate external services and data sources, Orchestra Cities
-currently leverages on Apache [NIFI](https://nifi.apache.org/) or
-Stream Sets [Data Collector](https://streamsets.com/products/sdc).
+External data sources can be integrated via Context Broker API
+or QuantumLeap API (in this case, no real time data will be available
+for that data source).
+
 This tool allows the creation of visual workflows for data injection into
 the platform. Workflows support
 web services, files and other sources and can be saved to replicable
@@ -280,16 +273,14 @@ own data import flow for a given service.
 
 ![Data Integration Flow](rsrc/overview/data_integration.png "Data Integration Flow")
 
-## Open Standards
+###  2.6.1 Software used to realise this layer
 
-Orchestra Cities relies on different Open Standards that facilitates the
-integration with existing solutions.
+To integrate external services and data sources, Orchestra Cities
+currently leverages on Apache [NIFI](https://nifi.apache.org/) or
+Stream Sets [Data Collector](https://streamsets.com/products/sdc).
 
-| Layer        | Standards                                    |
-|--------------|------------------------------------------------|
-| Security     | OAUTH 2.0, OIDC, SAML, KERBEROS, LDAP, X.509 |
-| IoT          | Protocols: UL, JSON, LWM2M                   |
-|              | Transport: HTTP, COAP, MQTT, AMQP, LORAWAN   |
-| Data Exchange| Protocols: JSON/REST, XML/SOAP, FTP/HTTP, WEBSOCKETS |
-|              | Data format: NGSI, JSON, GEOJSON, CSV, EXCEL, TEXT
-| Cloud        | Docker, Kubernetes |
+For better performances, it is also
+possible to develop python tasks.
+In this case, no visual support will
+be available to define the integration. Still you can leverage
+[SDKs](https://github.com/orchestracities/sdk).

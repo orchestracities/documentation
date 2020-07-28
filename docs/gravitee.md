@@ -1,10 +1,10 @@
-# Gravitee's Developer Portal
+# 4.2 Api Management (Gravitee)
 
 The Developer Portal is where the Orchestra Cities APIs are registered, and the
 policies defined. The following section describes how these APIs are registered
 in the Developer Portal and how policies and Oauth2 authorization are handled.
 
-## The Authorization flow
+## 4.2.1 The Authorization flow
 
 1. The user requests a token for the client API from Keycloak. The token comes
    from a public client in Keycloak, so no secret is required to obtain a token.
@@ -20,14 +20,14 @@ in the Developer Portal and how policies and Oauth2 authorization are handled.
 
 3. The authorisation is carried out according to the contents of the token.
 
-## Protecting an API
+## 4.2.2 Protecting an API
 
 To set up and protect an API through the Gravitee Developer Portal, one must do
 two things after registering the API: defining an Oauth2 resource to authenticate
 and authorize users, and define for each path of the API which policies should be
 applied.
 
-### Oauth2 Resource
+###  4.2.2.1 Oauth2 Resource
 
 ![Resources](rsrc/keycloak/gravitee_resources.png)
 
@@ -51,7 +51,7 @@ The configuration contains:
 - **Form param name**: token
 
 
-### Policies
+### 4.2.2.2 Policies
 
 ![Policies](rsrc/keycloak/gravitee_policies.png)
 
