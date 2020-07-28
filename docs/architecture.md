@@ -7,7 +7,7 @@ such as Docker and Kubernetes.
 ![Orchestra Cities Architecture](rsrc/overview/architecture.png "Orchestra Cities Architecture")
 
 
-## Security
+## 2.1 Security
 
 The core of the security management is based on [OIDC](https://openid.net/connect/)
 and [OAUTH 2.0](https://oauth.net/2/) standards. The solution supports Identity,
@@ -49,13 +49,13 @@ The process works as follow:
 In case of success, the call will be forwarded to the API in the backend
 (if not, the user will be returned a 401 “Not Authorized” response).
 
-### APIs
+### 2.1.1 APIs
 
 * [Keycloak Auth API](https://www.keycloak.org/docs/latest/authorization_services/#_service_overview)
 * [Keycloak Admin API](https://www.keycloak.org/docs-api/5.0/rest-api/index.html)
 * [Gravitee API](https://docs.gravitee.io/apim/1.x/management-api/1.30/)
 
-### Software used to realise this layer
+### 2.1.2 Software used to realise this layer
 
 * The open source solution adopted for the Identity and Access Management
 is [Keycloak](https://www.keycloak.org/), the market-leading open source
@@ -73,7 +73,7 @@ mechanism to implement access control policies.
       and [ElasticSearch](https://www.elastic.co/elasticsearch/) - for logs -
       as backends.
 
-## Data Management
+## 2.2 Data Management
 
 The core of the data management is a Context Broker API collecting data from the
 different sources and forwarding them to the different backend APIs
@@ -127,7 +127,7 @@ In short, the process will work as follows:
 1.  The subscribed service processes it using its logic (in the case of
     Quantum Leap, it stores the received data in CrateDB).
 
-### Software used to realise this layer
+### 2.2.1 Software used to realise this layer
 
 * The Context Broker API is provided by
 [Orion](https://fiware-orion.readthedocs.io/en/master/),
@@ -146,12 +146,12 @@ data by services in need of working on batch data sets..
     * Quantum Leap supports [CrateDB](https://crate.io/)
       or [Timescale](https://www.timescale.com/) as backends.
 
-### APIs
+### 2.2.2 APIs
 
 * [Orion API](https://fiware.github.io/specifications/ngsiv2/stable/)
 * [QuantumLeap API](https://app.swaggerhub.com/apis/smartsdk/ngsi-tsdb)
 
-## Device Management
+## 2.3 Device Management
 
 To manage the IoT devices, Orchestra Cities leverages FIWARE stack and
 hence the NGSIv2 API and data format. FIWARE offers a wide range of
@@ -191,7 +191,7 @@ work as follow:
 
 1.  Finally, the Agent sends the NGSIv2 payload to the Context Broker
 
-### Software used to realise this layer
+### 2.3.1 Software used to realise this layer
 
 * IoT Agent Manager, an API proxy that allows to access different services
   implementing FIWARE IoT Agent configuration APIs.
@@ -204,13 +204,13 @@ Context Broker.
 
     * IoT Agents requires [MongoDB](https://www.mongodb.com/) as backend.
 
-### APIs
+### 2.3.2 APIs
 
 * [IoT Agent config API](https://iotagent-node-lib.readthedocs.io/en/latest/api/index.html)
 * [IoT Agent UL API](https://fiware-iotagent-ul.readthedocs.io/en/latest/usermanual/index.html#api-overview)
 * [IoT Agent JSON API](https://fiware-iotagent-json.readthedocs.io/en/latest/usermanual/index.html)
 
-## Dashboard Management
+## 2.4 Dashboard Management
 
 Orchestra Cities allows creation of dashboards to monitor and visualise
 data. Dashboards include a set of “panels” that provides support for rendering
@@ -231,7 +231,7 @@ Dashboards can run on multiple end-user devices without
 installation and provides good responsiveness for the dimensions of
 desktop screens, mobile phones and tablets. 
 
-### Software used to realise this layer
+### 2.4.1 Software used to realise this layer
 
 Dashboards can be realised with two solutions:
 
@@ -245,12 +245,12 @@ Dashboards can be realised with two solutions:
   framework to develop elegant and interactive dashboards.
 
 
-### APIs
+### 2.4.2 APIs
 
 * [Grafana API](https://grafana.com/docs/grafana/latest/http_api/)
 * [URBO API](https://github.com/GeographicaGS/UrboCore-api/tree/master/docs/reference)
 
-## Analytics
+## 2.5 Analytics
 
 While the dashboard can provide simple real-time analytics, for more
 complex tasks different solutions should be used. Depending on the
@@ -259,7 +259,7 @@ The different solutions, integrated to the Data Management layer, can
 analyse data sets (e.g. Weather forecast) whether they are
 real-time and/or historical data.
 
-## Data Integration
+### 2.6 Data Integration
 
 External data sources can be integrated via Context Broker API
 or QuantumLeap API (in this case, no real time data will be available
@@ -273,7 +273,7 @@ own data import flow for a given service.
 
 ![Data Integration Flow](rsrc/overview/data_integration.png "Data Integration Flow")
 
-### Software used to realise this layer
+###  2.6.1 Software used to realise this layer
 
 To integrate external services and data sources, Orchestra Cities
 currently leverages on Apache [NIFI](https://nifi.apache.org/) or

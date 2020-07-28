@@ -21,12 +21,12 @@ with the following variables:
 | {{client_secret}} | get the secret of the resource_server client from [Keycloak's api][2] |
 | {{token}}     | this will be set for you when you follow User API Authentication section |
 
-## User Management
+## 5.1 User Management
 
 User Management can be performed directly inside of Keycloak's admin UI, or
 through the Portal's UI.
 
-### Create a user with Keycloak
+### 5.1.1 Create a user with Keycloak
 
 To create a new user, log into [Keycloak's admin UI][2].
 Make sure your Keycloak account has admin privileges on Keycloak to allow for
@@ -41,7 +41,7 @@ Back on the Users page, find the newly created User and click on it to bring up
 its details page. Under the groups tab, add the user to at least one tenant
 group for the Portal, in this case it should be "OrchestraCities".
 
-### Create a user with the Portal
+### 5.1.2 Create a user with the Portal
 
 To create a new user, log into the [Portal][1]. Your Keycloak account needs to
 have the required privileges to do so just like with the Keycloak Admin UI
@@ -54,7 +54,7 @@ From there you can click on New User to bring up a User creation form. Fill in t
 required details and create a new User from there. Note: a User must be added
 to at least one Group to start, so ensure at least one Group exists.
 
-### Create Service Groups with Keycloak
+### 5.1.3 Create Service Groups with Keycloak
 
 From the Keycloak Admin UI, select "Groups" on the left sidebar. You'll be
 presented with a list of groups and subgroups. The root groups represent the
@@ -74,7 +74,7 @@ bottom.
 
 ![](rsrc/auth/keycloak_attributes.png)
 
-### Create User Groups and Assign User Roles with Keycloak
+### 5.1.4 Create User Groups and Assign User Roles with Keycloak
 
 Creating User Groups is similar to creating Service Groups. Once again, go to
 the "Groups" page, click on "OrchestraCities" and then click "New". Enter a name for
@@ -91,7 +91,7 @@ on any save button this time.
 
 ![](rsrc/auth/keycloak_roles.png)
 
-### Add users to User Groups or Service Groups with Keycloak
+### 5.1.5 Add users to User Groups or Service Groups with Keycloak
 
 In order to give a User the Roles from the new User Group, and to give them
 permission for the new Service Group the User needs to become a member of those
@@ -107,7 +107,7 @@ by selecting the Group they belong to and clicking "Leave".
 
 ![](rsrc/auth/keycloak_group_membership.png)
 
-### Create Groups and assign Roles and Users with the Portal
+### 5.1.6 Create Groups and assign Roles and Users with the Portal
 
 As previously done when creating Users, log into the Portal and click on Admin,
 selecting Groups from the dropdown menu this time.
@@ -123,7 +123,7 @@ It's also possible to create Service Path Groups from the Admin/Service Paths
 section of the Portal. It can be done directly from that page, and Users can be
 added just as with the User Groups.
 
-### User API Authentication
+### 5.1.7 User API Authentication
 
 With the following token you will be able to authenticate to OC APIs.
 The cloud hosted platform at the time being requires a `client_secret`, which
@@ -204,7 +204,7 @@ you need to obtain from OrchestraCities team.
             "active": true
         }
 
-## Getting Access to APIs
+## 5.2 Getting Access to APIs
 
 Access to the APIS of the different services composing OrchestraCities is
 governed by the [API Gateway][3], which is based on [Gravitee](https://gravitee.io/)
@@ -246,9 +246,9 @@ get your `apiKey` from the *subscription* part of the left menu.
 
 ![My API Subscriptions](rsrc/api/subscriptions.png "My API Subscriptions")
 
-## Register a device
+## 5.3 Register a device
 
-### Register a device using APIs
+### 5.3.1 Register a device using APIs
 
 In order to receive data from the devices, first you need to register the device
 in the IoT Agent. For that, you need to create the device groups and the devices.
@@ -305,12 +305,12 @@ to official FIWARE IoT Agents, poses some restrictions:
 * In the cloud platform, `cbroker` is not supported, since the platform allows
   agents to communicate only with the context broker offered by the platform.
 
-#### Device Groups Operations
+#### 5.3.1.1 Device Groups Operations
 
 To interact with a specific protocol, you will need to used the `protocol`
 parameter to every call.
 
-##### 1. Create
+##### 5.3.1.1.1 Create
 
 ```
 curl -X POST \
@@ -382,7 +382,7 @@ This request creates the Device Group for the Waste devices. For the Parking
 devices you must update the value of `entity_type` to `ParkingSpot` and the
 `Fiware-ServicePath` to `ParkingManagement`.
 
-##### 2. Update
+##### 5.3.1.1.2 Update
 To update a Service Group, you need to know its key:
 
 ```
@@ -419,12 +419,12 @@ curl -X DELETE \
 More operations (and examples) related with the services groups can be found
 [here](https://github.com/Fiware/tutorials.IoT-Agent#service-group-crud-actions).
 
-#### Devices Operations
+#### 5.3.1.2 Devices Operations
 
 Device creation works in a similar way. Devices are coupled to the Device Group,
 based on `Fiware-Service` and `Fiware-ServicePath` and `entity_type`.
 
-##### 1. Create
+##### 5.3.1.2.1 Create
 
 ```
 curl -X POST \
@@ -450,7 +450,7 @@ It is recommended not to used name with spaces or weird characters,
 this may not be supported by orion or may be complex to query since will require
 you to used URI encoding.
 
-##### 2. Update
+##### 5.3.1.2.2 Update
 
 To update a device:
 
@@ -468,7 +468,7 @@ To update a device:
   }'
 ```
 
-##### 3. Delete
+##### 5.3.1.2.3 Delete
 
 ```
 curl -iX DELETE \
@@ -482,7 +482,7 @@ curl -iX DELETE \
 More operations (and examples) related with the devices can be found
 [here](https://github.com/Fiware/tutorials.IoT-Agent#device-crud-actions).
 
-### Register a device using UI
+### 5.3.2 Register a device using UI
 
 To register a new Device, log once again into the [Portal][1] . From the top
 navigation bar select "Device Groups" under "Device Management"
@@ -513,7 +513,7 @@ fields are filled in correctly.
 Your newly registered Device should now be visible in the Devices list upon
 successful creation. If an error occurs, make sure your fields are filled in properly.
 
-## Data Management
+## 5.4 Data Management
 
 The entry point for any data management activity (other options may be possible,
 but are not recommended for "live data"), is Orion Context Broker.
@@ -597,7 +597,7 @@ another service, we should create a subscription.
 data sent before the creation are not persisted in Quantum Leap (or any other
 service).
 
-### Alignment with FIWARE Data Models
+### 5.4.1 Alignment with FIWARE Data Models
 
 While in principle it is possible to store any data model in Orion, it is
 highly recommended to leverage FIWARE [Data Models](https://fiware-datamodels.readthedocs.io/en/latest/).
@@ -611,9 +611,9 @@ changes and discuss them with the community as discussed in the
 [HOW TO USE FIWARE HARMONISED DATA MODELS IN YOUR PROJECTS](https://fiware-datamodels.readthedocs.io/en/latest/howto/index.html)
 section.
 
-### Querying Context Data
+### 5.4.2 Querying Context Data
 
-#### Querying Context Data from the UI
+#### 5.4.2.1 Querying Context Data from the UI
 
 Querying entities from the Context Broker can be done from the Portal's UI.
 Log in the [Portal][1] with your Keycloak credentials, and from the navbar on
@@ -629,7 +629,7 @@ new updates in a while (by default 24 hours). Clicking on the eyeball icon next
 to an Entity will bring up detailed info about it, as well as allowing you to
 see the most recent historical data for an attributes.
 
-#### Querying Context Data from the API
+#### 5.4.2.2 Querying Context Data from the API
 
 1. To query context data, you will need to get a token (and an api key if you
     need to run many queries).
@@ -662,7 +662,7 @@ For more information on context broker apis, refer to the official
 or its
 [step-by-step tutorial](https://fiware-tutorials.readthedocs.io/en/latest/getting-started/index.html).
 
-### Querying Historical Data
+### 5.4.3 Querying Historical Data
 
 1. To query historical context data, you will need to get a token (and an api
     key if you need to run many queries).
@@ -685,7 +685,7 @@ historical context data, refer to the official
 or its
 [step-by-step tutorial](https://fiware-tutorials.readthedocs.io/en/latest/time-series-data/index.html).
 
-## Importing data from external source
+## 5.5 Importing data from external source
 
 As early mentioned, the entry point for any data management activity is
 usually the Orion Context Broker.
@@ -694,7 +694,7 @@ important to keep in mind that the platform is currently focused on real time
 data from APIs or sensors. This implies that importing "static" data, it is
 currently supported via some work around.
 
-### Which approach to use to import a different type of data?
+### 5.5.1 Which approach to use to import a different type of data?
 
 The rule of thumb could be the following:
 
@@ -735,7 +735,7 @@ The rule of thumb could be the following:
 As mentioned above, it is highly recommended to leverage FIWARE
 [Data Models](https://fiware-datamodels.readthedocs.io/en/latest/).
 
-### Which tools to use to import data?
+### 5.5.2 Which tools to use to import data?
 
 FIWARE Community, over time, developed different solutions.
 You can search for them in GitHub and other FIWARE
@@ -750,7 +750,7 @@ Here are the recommendations from Orchestra Cities:
   [NIFI](https://nifi.apache.org/) or Stream Sets
   [Data Collector](https://streamsets.com/products/sdc) are good options.
 
-### Example of Data Collector to Import a CSV File from CKAN
+### 5.5.3 Example of Data Collector to Import a CSV File from CKAN
 
 Here we shortly explain an example pipeline we created to import data
 from a CSV file into Orion. Data imported are mapped to the `PointOfInterest`
@@ -812,7 +812,7 @@ data model. You can find the example ready to be customised [here](rsrc/dataflow
 
     ![Send Data](rsrc/dataflow/pipeline-6.png "Send Data")
 
-#### Tips
+#### 5.5.3.1 Tips
 
 1. Use the preview icon and click on the stage to see how data are manipulated.
 
@@ -822,7 +822,7 @@ data model. You can find the example ready to be customised [here](rsrc/dataflow
 
   ![WireMock](rsrc/dataflow/wiremock.png "WireMock")
 
-## Creating Dashboards
+## 5.6 Creating Dashboards
 
 For the dashboards creation, we use [Grafana](https://grafana.com/). The
 dynamic nature of dashboards and their composition with elements such as graphs
@@ -831,24 +831,24 @@ and panels enables a wide range of customisation.
 To get started, you need to log in the [dashboards][4] interface with your
 credentials and follow these steps.
 
-#### 1. Create datasource
+### 5.6.1 Create datasource
 
 The datasource represents the incoming data that will be used to feed the
 dashboards. To create a new data source you need to:
 
 1. Access the *Data Sources* section present in the *Configuration* panel. It will open a section where you can manages all the data sources and add new ones.
 
-![Data Sources](rsrc/dashboard/data_sources.png)
+  ![Data Sources](rsrc/dashboard/data_sources.png)
 
-2. Click in the *Add data source* button
+1. Click in the *Add data source* button
 
-![Add Data Source](rsrc/dashboard/add_data_source.png)
+  ![Add Data Source](rsrc/dashboard/add_data_source.png)
 
-3. Fill all the fields with the desired configuration and click *Save & Test*
+1. Fill all the fields with the desired configuration and click *Save & Test*
 
-![Configure Data Source](rsrc/dashboard/configure_data_source.png)
+  ![Configure Data Source](rsrc/dashboard/configure_data_source.png)
 
-#### 2. Start new dashboard / Import dashboard
+### 5.6.2 Start new dashboard / Import dashboard
 
 To create a new dashboard you need to access the *Dashboard* under the *Create* section, and after that you will be asked to select a new visualisation panel to add to the dashboard.
 
@@ -904,13 +904,13 @@ This section allows you to choose the way the data is represented on the chart. 
 
 ![Display](rsrc/dashboard/display.png)
 
-#### 8. Save Dashboard
+### 5.6.3 Save Dashboard
 
 In order to save all changes regarding the dashboards you must do it manually every time you created/update a dashboard. For that you need to click on `disk` icon positioned at the top right corner of the window.
 
 ![Save](rsrc/dashboard/save.png)
 
-#### 9. Dashboard time representation
+### 5.6.4 Dashboard time representation
 
 All the panels that are part of dashboard, represent data according to a specific time range. That time range can be defined at the top right corner of the portal.
 
@@ -920,7 +920,7 @@ If you click on the time button you will be able to change the time range that y
 
 ![Set Time](rsrc/dashboard/time2.png)
 
-#### 10. Dashboards organisation
+### 5.6.5 Dashboards organisation
 
 The dashboards can be organised as you wish. For that you need to access *Manage* under the *Dashboards* section.
 

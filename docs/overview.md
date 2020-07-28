@@ -1,6 +1,6 @@
 # 1. Platform overview
 
-## Concept
+## 1.1 Concept
 
 The Smart City solutions market is mostly driven by large players that
 rely on proprietary technologies. Only recently have a small niche of
@@ -42,7 +42,7 @@ most efficient and effective way to achieve its goals is to support
 multiple cities in a single platform. This approach brings several
 advantages in terms of: costs, scalability and modularity.
 
-### Key Technology Benefits
+### 1.1.1 Key Technology Benefits
 
 -   Support the migration from vertical data silos to a unified data
     space for a single integrated view over the city
@@ -62,7 +62,7 @@ advantages in terms of: costs, scalability and modularity.
 -   Allow citizens and businesses to take part on the city services
     co-creation process
 
-## Features Overview
+## 1.2 Features Overview
 
 Orchestra Cities features include:
 
@@ -147,8 +147,9 @@ Orchestra Cities features include:
         * Services availability via heartbeat
         * Services failure notification (Slack or Email)
 
-### Scenarios
+### 1.2.1 Scenarios
 While this repository doesn't provide any open source pre-configure dashboard, MARTEL developed dashboards for the a number of domains, including:
+
 * Environmental Monitoring:
     * Air Quality Monitoring
     * Noise Monitoring
@@ -160,7 +161,7 @@ While this repository doesn't provide any open source pre-configure dashboard, M
 * Streetlight Monitoring
 * Waste Monitoring
 
-## Open Standards
+## 1.3 Open Standards
 
 Orchestra Cities relies on different Open Standards that facilitates the
 integration with existing solutions.

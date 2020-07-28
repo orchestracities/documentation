@@ -1,4 +1,4 @@
-# 4.3. Admin Portal
+# 4.3 Admin Portal
 
 The purpose of the Admin Portal is to give users a way to manage the resources
 from the Context Broker, as well as managing users and groups outside of the
