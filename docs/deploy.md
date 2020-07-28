@@ -1,5 +1,39 @@
 # 3. Deploy an example instance
 
+In this repository you find [scripts](../deploy/) and a reference
+[docker compose](../deploy/docker-compose.yaml) file that allows
+you to deploy and configure a simple instance of Orchestra Cities.
+
+The scripts also configure some default services in Keycloak and in Gravitee.
+
+Proceed as follows:
+1. Launch the deployment
+
+  ```
+  $ xxx
+  ```
+
+This script will launch the docker-compose and load an example keycloak
+configuration. For better understanding how the configuration works,
+read [here](keycloak.md).
+
+1. Login in Keycloak at the following url: xxx. Regenerate all client secrets.
+
+  * Default username: xxx and password: xxx 
+
+1. Copy generated Client secrets in [api-key.env](../deploy/api-key.env) file.
+
+1. Update the deployed services to load the new configuration.
+
+  ```
+  $
+  ```
+
+You can now access the services at this urls:
+  * Admin Portal: [xxx](xxx) 
+  * Dashboard: [xxx](xxx)
+  * Developer portal: [xxx](xxx) 
+
 ## 3.1 Production
 
 For production grade deployments we recommend to use [Kubernetes](https://kubernetes.io/).
