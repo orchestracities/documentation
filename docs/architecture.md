@@ -259,7 +259,7 @@ The different solutions, integrated to the Data Management layer, can
 analyse data sets (e.g. Weather forecast) whether they are
 real-time and/or historical data.
 
-### 2.6 Data Integration
+## 2.6 Data Integration
 
 External data sources can be integrated via Context Broker API
 or QuantumLeap API (in this case, no real time data will be available

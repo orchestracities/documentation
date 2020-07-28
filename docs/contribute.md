@@ -6,7 +6,7 @@ specific repositories to contribute to the them.
 ## 6.1 Components
 
 * [Keycloak](https://www.keycloak.org/)
-* [gravitee.io](https://gravitee.io/)* The Context Broker API is provided by
+* [gravitee.io](https://gravitee.io/)
 * [Orion](https://fiware-orion.readthedocs.io/en/master/)
 * [Quantum Leap](https://quantumleap.readthedocs.io/en/latest/)
 * [IoT Agent Manager](https://github.com/telefonicaid/iotagent-manager)
