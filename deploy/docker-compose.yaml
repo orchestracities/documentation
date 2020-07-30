@@ -31,13 +31,13 @@ services:
     ports:
       - "8082:8082"
     depends_on:
-      - mongodb
+      - mongo
       - elasticsearch
     volumes:
       - ./logs/apim-gateway:/opt/graviteeio-gateway/logs
     environment:
-      - gravitee_management_mongodb_uri=mongodb://mongodb:27017/gravitee?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
-      - gravitee_ratelimit_mongodb_uri=mongodb://mongodb:27017/gravitee?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
+      - gravitee_management_mongodb_uri=mongodb://mongo:27017/gravitee?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
+      - gravitee_ratelimit_mongodb_uri=mongodb://mongo:27017/gravitee?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
       - gravitee_reporters_elasticsearch_endpoints_0=http://elasticsearch:9200
     networks:
       - storage
@@ -138,7 +138,31 @@ services:
     environment:
       - IOTA_MONGO_HOST=mongo
     ports:
-      - "8082:8082"
+      - "8086:8082"
+    networks:
+      - storage
+      - frontend
+
+  iot-agent:
+    image: fiware/iotagent-ul
+    depends_on:
+        - mongo
+    ports:
+        - "4061:4061"
+        - "7896:7896"
+    environment:
+        - "IOTA_CB_HOST=orion"
+        - "IOTA_CB_PORT=1026"
+        - "IOTA_NORTH_PORT=4061"
+        - "IOTA_REGISTRY_TYPE=mongodb"
+        - "IOTA_MONGO_HOST=mongo"
+        - "IOTA_MONGO_PORT=27017"
+        - "IOTA_MONGO_DB=iotagent-ul"
+        - "IOTA_HTTP_PORT=7896"
+        - "IOTA_PROVIDER_URL=http://iot-agent:4061"
+    networks:
+      - storage
+      - frontend
 
   grafana:
     image: grafana/grafana
@@ -153,10 +177,6 @@ services:
 
   redis:
     image: redis
-    deploy:
-      # Scaling Redis requires some extra work.
-      # See https://get-reddie.com/blog/redis4-cluster-docker-compose/
-      replicas: 1
     ports:
       - "6379:6379"
     volumes:
@@ -165,7 +185,7 @@ services:
       - storage
 
   portal:
-    image: orchestracities/portal:dev
+    image: orchestracities/portal:${PORTAL_VERSION:-0.1.23}
     depends_on:
       - portaldb
     environment:
@@ -173,26 +193,26 @@ services:
       - DJANGO_SETTINGS_MODULE=portal.settings.production
       - KEYCLOAK_FRONTEND_CLIENT_ID=portal
       - KEYCLOAK_OIDC_CLIENT_ID=resource_server
-      - KEYCLOAK_OIDC_CLIENT_SECRET=006ce147-dd78-42db-a78a-1b5b0f3a723f
-      - KEYCLOAK_BASE=https://auth.s.orchestracities.com/auth
+      - KEYCLOAK_OIDC_CLIENT_SECRET=98dabcef-960a-4474-8c11-e8807a92ec94
+      - KEYCLOAK_BASE=http://keycloak:8080/auth
       - KEYCLOAK_REALM=default
-      - KEYCLOAK_ADMIN_URI=https://auth.s.orchestracities.com/auth/
+      - KEYCLOAK_ADMIN_URI=http://keycloak:8080/auth/
       - KEYCLOAK_ADMIN_CLIENT_ID=admin-cli
-      - KEYCLOAK_ADMIN_CLIENT_SECRET=6fad563f-8e1c-4cb7-9ade-9734909dfb90
+      - KEYCLOAK_ADMIN_CLIENT_SECRET=cc4ffe2a-c660-4547-b3b4-5d1c93305047
       - KEYCLOAK_ADMIN_USERNAME=portaladmin
       - KEYCLOAK_ADMIN_PASSWORD=portaladminpass
-      - KEYCLOAK_OIDC_ENDPOINT=https://auth.s.orchestracities.com/auth
+      - KEYCLOAK_OIDC_ENDPOINT=http://keycloak:8001/auth
       - KEYCLOAK_OIDC_REALM=default
-      - KEYCLOAK_OIDC_AUTHORIZATION_ENDPOINT=https://auth.s.orchestracities.com/auth/realms/default/protocol/openid-connect/auth
-      - KEYCLOAK_OIDC_TOKEN_ENDPOINT=https://auth.s.orchestracities.com/auth/realms/default/protocol/openid-connect/token
-      - KEYCLOAK_OIDC_USER_ENDPOINT=https://auth.s.orchestracities.com/auth/realms/default/protocol/openid-connect/userinfo
-      - KEYCLOAK_OIDC_JWKS_ENDPOINT=https://auth.s.orchestracities.com/auth/realms/default/protocol/openid-connect/certs
+      - KEYCLOAK_OIDC_AUTHORIZATION_ENDPOINT=http://keycloak:8080/auth/realms/default/protocol/openid-connect/auth
+      - KEYCLOAK_OIDC_TOKEN_ENDPOINT=http://keycloak:8080/auth/realms/default/protocol/openid-connect/token
+      - KEYCLOAK_OIDC_USER_ENDPOINT=http://keycloak:8080/auth/realms/default/protocol/openid-connect/userinfo
+      - KEYCLOAK_OIDC_JWKS_ENDPOINT=http://keycloak:8080/auth/realms/default/protocol/openid-connect/certs
       - PORTAL_DB_HOST=portaldb
       - PORTAL_DB_PORT=5432
       - PORTAL_DB_NAME=portal
       - PORTAL_DB_USER=portal
       - PORTAL_DB_PASSWORD=password
-      - IOT_MANAGER_URI=http://iot-manager:8082
+      - IOT_MANAGER_URI=http://iot-manager:8086
       - CONTEXT_BROKER_URI=http://orion:1026
       - QUANTUMLEAP_URI=http://quantumleap:8668
       - GRAFANA_URL=#
@@ -204,6 +224,12 @@ services:
       - KIBANA_URL=#
       - NO_SQUL_URL=#
       - GRAVITEE_URL=#
+      - EMAIL_HOST=smtp.gmail.com
+      - EMAIL_USE_TLS=True
+      - EMAIL_PORT=587
+      - EMAIL_HOST_USER=ocportalmail@gmail.com
+      - EMAIL_HOST_PASSWORD=password
+      - REDIS_BROKER_URL=redis://redis:6379
       #- UI_CUSTOM_CSS_URL=https://raw.githubusercontent.com/orchestracities/shared-resources/master/oc-portal/css/ekz_css.css
       #- UI_CUSTOM_LOGO_URL=https://github.com/orchestracities/shared-resources/raw/master/oc-portal/images/ekz_logo.png
     ports:
@@ -218,6 +244,23 @@ services:
       - POSTGRES_USER=portal
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=portal
+    networks:
+      - storage
+      - frontend
+
+  keycloak:
+    image: jboss/keycloak:${KEYCLOAK_VERSION:-5.0.0}
+    ports:
+      - "8001:8080"
+    volumes:
+      - ./realm-export.json:/tmp/realm-export.json
+    environment:
+      - KEYCLOAK_USER=admin
+      - KEYCLOAK_PASSWORD=password
+      - KEYCLOAK_IMPORT=/tmp/realm-export.json
+    networks:
+      - storage
+      - frontend
 
 volumes:
   portal_db:
@@ -230,6 +273,4 @@ volumes:
 
 networks:
   frontend:
-    name: frontend
   storage:
-    name: storage
