@@ -16,6 +16,9 @@ services:
       - cluster.name=elasticsearch
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - 9200:9200
+      - 9300:9300
     ulimits:
       memlock:
         soft: -1
@@ -23,9 +26,10 @@ services:
       nofile: 65536
     networks:
       - storage
+      - frontend
 
   gateway:
-    image: graviteeio/gateway:${APIM_VERSION:-1}
+    image: graviteeio/gateway:${APIM_VERSION:-1.23.1}
     container_name: gio_apim_gateway
     restart: always
     ports:
@@ -44,7 +48,7 @@ services:
       - frontend
 
   management_api:
-    image: graviteeio/management-api:${APIM_VERSION:-1}
+    image: graviteeio/management-api:${APIM_VERSION:-1.23.1}
     container_name: gio_apim_management_api
     restart: always
     ports:
@@ -65,7 +69,7 @@ services:
       - frontend
 
   management_ui:
-    image: graviteeio/management-ui:${APIM_VERSION:-1}
+    image: graviteeio/management-ui:${APIM_VERSION:-1.23.1}
     container_name: gio_apim_management_ui
     restart: always
     ports:
@@ -100,6 +104,7 @@ services:
       - "27017:27017"
     volumes:
       - mongodata:/data/db
+      - ./mongodump:/home/dump
     networks:
       - storage
 
@@ -147,6 +152,7 @@ services:
     image: fiware/iotagent-ul
     depends_on:
         - mongo
+        - iot-manager
     ports:
         - "4061:4061"
         - "7896:7896"
@@ -160,6 +166,8 @@ services:
         - "IOTA_MONGO_DB=iotagent-ul"
         - "IOTA_HTTP_PORT=7896"
         - "IOTA_PROVIDER_URL=http://iot-agent:4061"
+    volumes:
+      - ./iotagent-ul-config.js:/opt/iotaul/config.js
     networks:
       - storage
       - frontend
@@ -199,9 +207,9 @@ services:
       - KEYCLOAK_ADMIN_URI=http://keycloak:8080/auth/
       - KEYCLOAK_ADMIN_CLIENT_ID=admin-cli
       - KEYCLOAK_ADMIN_CLIENT_SECRET=cc4ffe2a-c660-4547-b3b4-5d1c93305047
-      - KEYCLOAK_ADMIN_USERNAME=portaladmin
-      - KEYCLOAK_ADMIN_PASSWORD=portaladminpass
-      - KEYCLOAK_OIDC_ENDPOINT=http://keycloak:8001/auth
+      - KEYCLOAK_ADMIN_USERNAME=admin
+      - KEYCLOAK_ADMIN_PASSWORD=password
+      - KEYCLOAK_OIDC_ENDPOINT=http://keycloak:8080/auth
       - KEYCLOAK_OIDC_REALM=default
       - KEYCLOAK_OIDC_AUTHORIZATION_ENDPOINT=http://keycloak:8080/auth/realms/default/protocol/openid-connect/auth
       - KEYCLOAK_OIDC_TOKEN_ENDPOINT=http://keycloak:8080/auth/realms/default/protocol/openid-connect/token
@@ -212,7 +220,7 @@ services:
       - PORTAL_DB_NAME=portal
       - PORTAL_DB_USER=portal
       - PORTAL_DB_PASSWORD=password
-      - IOT_MANAGER_URI=http://iot-manager:8086
+      - IOT_MANAGER_URI=http://iot-manager:8082
       - CONTEXT_BROKER_URI=http://orion:1026
       - QUANTUMLEAP_URI=http://quantumleap:8668
       - GRAFANA_URL=#
@@ -251,7 +259,7 @@ services:
   keycloak:
     image: jboss/keycloak:${KEYCLOAK_VERSION:-5.0.0}
     ports:
-      - "8001:8080"
+      - "8080:8080"
     volumes:
       - ./realm-export.json:/tmp/realm-export.json
     environment:
@@ -261,6 +269,7 @@ services:
     networks:
       - storage
       - frontend
+
 
 volumes:
   portal_db:
