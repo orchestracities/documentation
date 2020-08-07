@@ -181,6 +181,7 @@ services:
       - crate
     networks:
       - frontend
+      - storage
 
   redis:
     image: redis
