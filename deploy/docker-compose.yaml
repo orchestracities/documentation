@@ -132,6 +132,7 @@ services:
       - "4200:4200"
       # Transport protocol
       - "4300:4300"
+      - "5432:5432"
     volumes:
       - cratedata:/data
     networks:
