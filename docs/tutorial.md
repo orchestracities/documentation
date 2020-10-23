@@ -687,9 +687,51 @@ or its
 
 ### 5.4.4 Monitoring data injection
 
-OrchestraCities portal can be used to monitor data injection, i.e. verify
-that entities are updated with a given frequency in the Oriona Context
+OrchestraCities' Portal can be used to monitor data injection, i.e. verify
+that entities are updated with a given frequency in the Orion Context
 Broker API and/or in the QuantumLeap API.
+This is accomplished using Alarms, which can be set in the Portal to trigger
+when an entity or entities under a given Service Type has/have not been updated
+with new data within a given period of time.
+
+The Alarms page can be accessed directly from the navigation bar under
+"Data Management", or by clicking on the small bell icon next to an entity
+listed in the Entities page.
+
+![Alarms Page](rsrc/portal/alarms.png "Alarms Page")
+
+When creating a new Alarm, it needs to include:
+
+- Alarm Type: This choses whether the Alarm will observe either a specific
+  Entity, or all entities under a given Service Path.
+- Entity: The ID of the Entity to be observed, if the Alarm is of Type Entity.
+- Entity Type: Optional Entity Type. This is required to differentiate between
+  multiple Entities with the same ID but different types.
+- Notification Channel: How the notifications will be sent when the Alarm is
+  triggered (e.g. via email)
+- Channel Destination: Where the notifications will be sent when the Alarm is
+  triggered (e.g. the email address)
+- Max time since last Entity update: The amount of time that needs to pass
+  between updates to the Entity before the alarm is triggered. For example,
+  if set to 30 minutes, the alarm is triggered if between the time of the last
+  data sent to Orion/Quantum Leap and the current time at least 30 minutes
+  have passed.
+- Time Unit: The unit to use for the above time (seconds, minutes, hours, ...)
+- Minimum time interval between notifications: The amount of time that should
+  pass between notifications sent out by this Alarm. For example, if set to 1
+  hour, at least 1 hour needs to pass between one notification and another.
+- Alarm frequency time unit: The unit to use for the above time (seconds, minutes, hours, ...)
+
+Alarms can be activated or de-activated from the Alarms page by clicking on the
+corresponding button to the right.
+
+Currently, the notification channels available are the following:
+
+- Email: Alarms will send out an email as notification when triggered. The email
+  contains information about which Alarm was triggered, which Entity/Entities it
+  refers to, the amount of time passed since the last bit of data was received,
+  and potential issues that may have occurred in Orion or Quantum Leap if data 
+  couldn't be retrieved.
 
 ## 5.5 Importing data from external source
 
