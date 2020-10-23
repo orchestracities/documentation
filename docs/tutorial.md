@@ -402,7 +402,7 @@ curl -iX PUT \
 This request will update the value for the field `entity_type` for the service
 group with apikey `T3JjaGVzdHJhQ2l0aWVzOi9XYXN0ZU1hbmFnZW1lbnQ6V2FzdGVDb250YWluZXI6MQ==` for the specified `Fiware-Service` and `Fiware-ServicePath`.
 
-##### 3. Delete
+##### 5.3.1.1.3. Delete
 
 Similarly, to delete a Device Group:
 
@@ -684,6 +684,12 @@ historical context data, refer to the official
 [QuantumLeap documentation](https://quantumleap.readthedocs.io/en/latest/),
 or its
 [step-by-step tutorial](https://fiware-tutorials.readthedocs.io/en/latest/time-series-data/index.html).
+
+### 5.4.4 Monitoring data injection
+
+OrchestraCities portal can be used to monitor data injection, i.e. verify
+that entities are updated with a given frequency in the Oriona Context
+Broker API and/or in the QuantumLeap API.
 
 ## 5.5 Importing data from external source
 
