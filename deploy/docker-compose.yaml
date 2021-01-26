@@ -134,7 +134,7 @@ services:
       - "4300:4300"
       - "5432:5432"
     volumes:
-      - cratedata:/data
+      - ./cratedata:/data
     networks:
       - storage
 
@@ -194,7 +194,7 @@ services:
       - storage
 
   portal:
-    image: orchestracities/portal:${PORTAL_VERSION:-0.1.23}
+    image: orchestracities/portal:${PORTAL_VERSION:-0.1.30}
     depends_on:
       - portaldb
     environment:

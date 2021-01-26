@@ -1,0 +1,1 @@
+{"options":{},"indexes":[{"v":1,"key":{"_id":1},"name":"_id_","ns":"iotagent-manager.protocols"},{"v":1,"unique":true,"key":{"protocol":1,"resource":1},"name":"protocol_1_resource_1","ns":"iotagent-manager.protocols","background":true}]}
