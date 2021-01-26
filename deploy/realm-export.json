@@ -2,7 +2,7 @@
   "id": "default",
   "realm": "default",
   "displayName": "OrchestraCities",
-  "displayNameHtml": "<div class=\"kc-logo-text\"><span>EKZ Smart City</span></div>",
+  "displayNameHtml": "<div class=\"kc-logo-text\"><span>OrchestraCities Demo</span></div>",
   "notBefore": 0,
   "revokeRefreshToken": false,
   "refreshTokenMaxReuse": 0,
