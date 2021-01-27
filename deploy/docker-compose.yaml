@@ -173,11 +173,15 @@ services:
       - frontend
 
   grafana:
-    image: grafana/grafana
+    image: grafana/grafana:7.3.7
     ports:
       - "3000:3000"
     environment:
       - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-worldmap-panel
+    volumes:
+      - ./crate-datasource:/var/lib/grafana/plugins/crate-datasource
+      - ./grafana-map-plugin:/var/lib/grafana/plugins/map-panel
+      - ./grafana.db:/var/lib/grafana/grafana.db
     depends_on:
       - crate
     networks:
