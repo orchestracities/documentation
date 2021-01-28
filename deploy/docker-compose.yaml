@@ -132,8 +132,8 @@ services:
       # Transport protocol
       - "4300:4300"
       - "5432:5432"
-    #volumes:
-      #- ./cratedata:/data
+    volumes:
+      - ./cratedata:/data
     networks:
       - storage
 
