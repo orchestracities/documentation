@@ -124,17 +124,16 @@ services:
       - storage
 
   crate:
-    image: crate:${CRATE_VERSION:-3.1.2}
-    command: crate -Clicense.enterprise=false -Cauth.host_based.enabled=false
-      -Ccluster.name=democluster -Chttp.cors.enabled=true -Chttp.cors.allow-origin="*"
+    image: crate:${CRATE_VERSION:-4.1.4}
+    command: crate -Cnode.name=crate
     ports:
       # Admin UI
       - "4200:4200"
       # Transport protocol
       - "4300:4300"
       - "5432:5432"
-    volumes:
-      - ./cratedata:/data
+    #volumes:
+      #- ./cratedata:/data
     networks:
       - storage
 

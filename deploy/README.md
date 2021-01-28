@@ -38,7 +38,7 @@ There's a few necessary steps to setup Keycloak to work with the Portal:
 4. Under users, create a new user. Give it a username and email at least, and
    set a password for it. Ensure to tick the box for verified email, and untick
    the box for temporary password. Add the user to the groups
-   /WasteManagement/Demo and Admin under the Town group.
+   /EnvironmentManagement/Demo and Admin under the Town group.
 
 ## Log into the Portal
 
