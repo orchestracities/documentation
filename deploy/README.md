@@ -44,7 +44,7 @@ There's a few necessary steps to setup Keycloak to work with the Portal:
 
 You can now log into the portal at http://localhost:8000 using the newly created
 user. An example Device and Group has been created and filled with a basic
-temperature attribute.
+air quality attribute.
 
 ## Send some data to the UL IoT Agent
 
