@@ -48,20 +48,22 @@ temperature attribute.
 
 ## Send some data to the UL IoT Agent
 
-With the script send_payload_to_agent.sh you can send some basic temperature
-reading to a new device called TestDev2. The script can be invoked as:
+With the script send_payload_to_agent.sh you can send an air quality reading to
+a device called Device. The script can be invoked as:
 
 ```
- ./send_payload_to_agent.sh 13
+ ./send_payload_to_agent.sh 51
 ```
 
-Where 13 is the temperature to send for example.
+Where 51 is the air quality reading to send for example. You can see the changes
+reflect onto the map in Grafana.
 
 ## Log into Grafana
 
 The Grafana dashboards can be found at http://localhost:3000 . Login with the
 default admin user (USERNAME: admin, PASSWORD: admin). An example dashboard
-can be found under the general group.
+can be found under the general group showing a map with the example device for
+air quality. It should appear as an icon in Switzerland.
 
 # Todo (next)
 - Use newer keycloak and load scripts
