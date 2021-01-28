@@ -1,0 +1,1 @@
+{"options":{},"indexes":[{"v":1,"key":{"_id":1},"name":"_id_","ns":"orion-town.entities"},{"v":1,"key":{"location.coords":"2dsphere"},"name":"location.coords_2dsphere","ns":"orion-town.entities","2dsphereIndexVersion":3},{"v":1,"key":{"expDate":1},"name":"expDate_1","ns":"orion-town.entities","expireAfterSeconds":0}]}
