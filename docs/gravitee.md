@@ -11,7 +11,7 @@ in the Developer Portal and how policies and Oauth2 authorization are handled.
    It's worth reminding that the public clients set up in Keycloak will
    limit what the given tokens enable users to do, such as user management operations.
    The user requests a specific scope with the request (e.g. entity:read). A list
-   of scopes is available in the [**Keycloak Configuration**](/keycloak) section of this documentation.
+   of scopes is available in the [**Keycloak Configuration**](keycloak.md) section of this documentation.
 
 2. When then token is used, it is validated against Keycloak's confidential client
    (the resource-server client). The operation being attempted (e.g. creating an
@@ -58,7 +58,7 @@ The configuration contains:
 For each API endpoint, policies are in place for each operation. This enables API
 owners to decide exactly what scopes are required for users to perform different
 operations, whether is accessing, editing, creating or deleting resources.
-See the [**Keycloak Configuration**](/keycloak) section for more details on
+See the [**Keycloak Configuration**](keycloak.md) section for more details on
 client scopes.
 
 Policies follow a basic syntax of resource:operation, so for the /entities endpoint
