@@ -1,23 +1,29 @@
-site_name: "Orchestra Cities"
+site_name: Orchestra Cities
 site_url: https://orchestracities.com
-site_description: 'Orchestra Cities Documentation'
-site_author: 'Martel Innovate'
-copyright: 'Copyright &copy; 2020 - Martel Innovate'
-theme: readthedocs
-#markdown_extensions: [toc,fenced_code]
+site_description: Orchestra Cities Documentation
+site_author: Martel Innovate
+copyright: Copyright &copy; 2020 - Martel Innovate
+theme:
+  name: readthedocs
+  locale: en
 markdown_extensions:
-    - toc:
-        permalink: "#"
-    - fenced_code:
+  - fenced_code
+  - toc:
+      permalink: "#"
+validation:
+  links:
+    absolute_links: relative_to_docs
+    anchors: warn
+    unrecognized_links: warn
 docs_dir: docs
 nav:
-    - '0. Introduction': 'index.md'
-    - '1. Platform overview': 'overview.md'
-    - '2. Architecture': 'architecture.md'
-    - '3. Deploy an example instance': 'deploy.md'
-    - '4. Security configuration':
-      - '4.1. Auth Provider (Keycloak)': 'keycloak.md'
-      - '4.2. Api Management (Gravitee)': 'gravitee.md'
-      - '4.3. Admin Portal': 'portal.md'
-    - '5. Tutorial': 'tutorial.md'
-    - '6. How to contribute': 'contribute.md'
+  - 0. Introduction: index.md
+  - 1. Platform overview: overview.md
+  - 2. Architecture: architecture.md
+  - 3. Deploy an example instance: deploy.md
+  - 4. Security configuration:
+    - 4.1. Auth Provider (Keycloak): keycloak.md
+    - 4.2. Api Management (Gravitee): gravitee.md
+    - 4.3. Admin Portal: portal.md
+  - 5. Tutorial: tutorial.md
+  - 6. How to contribute: contribute.md
