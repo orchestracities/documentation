@@ -69,7 +69,9 @@ function release() {
 
     local docs_dir='docs'
     local latest_doc_commit=$(commit_date "${docs_dir}")
-    sed -i -e "1s/.*/$latest_doc_commit/" "${docs_dir}/index.md"
+    local docs_date="*Latest Update: ${latest_doc_commit}*"
+    sed -i -e "1s/.*/$docs_date/" "${docs_dir}/index.md"
+    rm "${docs_dir}/index.md-e"
 
     # git add .
     echo git commit -m "release ${version}"
