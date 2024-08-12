@@ -78,6 +78,36 @@ and then browse to http://localhost:8000. If you edit files in the
 `docs` directory, your changes should be reflected in the browser.
 
 
+### Cutting a release
+
+Here's how to cut a new release. First off, run the release command
+from the master branch within your local repository. At the moment,
+the command implementation blindly assumes the current directory is
+the repository's root directory, so make sure that is the case as in
+the sequences of commands below. The release command takes three
+numbers as input: major, minor and patch numbers of the version you
+want to release. It then
+
+1. Updates the first line of `docs/index.md` with the date of
+    the latest commit in the `docs` dir.
+2. Commits the change and tags with the specified version.
+3. Pushes the commit and the tag to remote.
+
+For example, the commands below would release version `2.1.4` and
+tag the commit with `v2.1.4`.
+
+```bash
+$ cd nix
+$ nix shell
+$ cd ..
+$ oc release 2 1 4
+```
+
+Next, [build the static site tarball][docs-site] from the current
+git commit, create a GitHub release for the version just tagged
+(e.g. `v2.1.4`) and upload the tarball to the GitHub release.
+
+
 ### Publishing the site
 
 We build a static Web site and package it in a tarball. You should
