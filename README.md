@@ -141,6 +141,8 @@ Next, [build the static site tarball][docs-site] from the current
 git commit, create a GitHub release for the version just tagged
 (e.g. `v2.1.4`) and upload the tarball to the GitHub release.
 
+Finally, update the `docs-site` Nix package to include this release.
+
 
 ### Publishing the site
 
