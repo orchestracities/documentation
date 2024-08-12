@@ -1,7 +1,7 @@
 #
 # See `docs.md` for package documentation.
 #
-{ pkgs }:
+{ pkgs, scripts }:
 rec {
 
   tools = with pkgs; [
@@ -11,6 +11,7 @@ rec {
     git
     mkdocs
     python3
+    scripts
   ];
 
   # Make a shell env with all the given programs.
