@@ -73,10 +73,10 @@ function release() {
     sed -i -e "1s/.*/$docs_date/" "${docs_dir}/index.md"
     rm "${docs_dir}/index.md-e"
 
-    # git add .
-    echo git commit -m "release ${version}"
-    echo git tag "${version}"
-    # git push --tags
+    git add .
+    git commit -m "release ${version}"
+    git tag "${version}"
+    git push --tags
 }
 
 #
