@@ -78,14 +78,24 @@ and then browse to http://localhost:8000. If you edit files in the
 `docs` directory, your changes should be reflected in the browser.
 
 
-### Deploying the site
+### Publishing the site
 
-To go live with your changes, first build the Nix package
+We build a static Web site and package it in a tarball. You should
+be able to just extract the tarball in a suitable directory on a
+Web server and serve the plain files in the extracted directory.
+That's basically what we do to publish the documentation to our
+Nginx machine serving `docs.orchestracities.com`.
 
-```bash
-$ cd nix
-$ nix build .#docs-site
-```
+How to get the tarball containing the static documentation site?
+Either download it from a [GitHub Release][releases] or [build it
+yourself][docs-site] with Nix. Even better, if you have a Nix-based
+Web server setup, you could just import the `docs` directory of one
+of our `docs-site` Nix packages, e.g. `docs-site.v1.0.0` for the
+`v1.0.0` release or `docs-site.git` for the current content of the
+master branch.
 
-then upload and extract `result/docs.tgz` to our Nginx machine
-serving `docs.orchestracities.com`.
+
+
+
+[docs-site]: ./nix/pkgs/docs-site/docs.md
+[releases]: https://github.com/orchestracities/documentation/releases
