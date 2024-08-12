@@ -90,7 +90,7 @@ How to get the tarball containing the static documentation site?
 Either download it from a [GitHub Release][releases] or [build it
 yourself][docs-site] with Nix. Even better, if you have a Nix-based
 Web server setup, you could just import the `docs` directory of one
-of our `docs-site` Nix packages, e.g. `docs-site.v1.0.0` for the
+of our `docs-site` Nix packages, e.g. `docs-site.v1_0_0` for the
 `v1.0.0` release or `docs-site.git` for the current content of the
 master branch.
 
