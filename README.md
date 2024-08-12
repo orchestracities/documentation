@@ -50,6 +50,40 @@ $ cd nix
 $ nix shell
 ```
 
+Once in the Nix shell, any script with a shebang of `#!/bin/sh` gets
+executed by the Bash bundled in our Nix shell. For example, save the
+script below as `nix/test.sh` and make it executable
+
+```bash
+#!/bin/sh
+
+sh --version
+
+echo ----------------
+which sh
+readlink $(which sh)
+```
+
+Running the script inside the Nix shell yields
+
+```
+GNU bash, version 5.2.26(1)-release (aarch64-apple-darwin23.5.0)
+...
+----------------
+/nix/store/8dhzx8i8xp8cl3m33xailx1d48g54m58-dev-shell/bin/sh
+/nix/store/fyjay93q3dq2hx3dhx7zhr8kyjnkh9m8-bash-5.2p26/bin/sh
+```
+
+whereas running it *outside* of the Nix shell on my MacOS M1 with
+Bash set as a default shell
+
+```
+GNU bash, version 3.2.57(1)-release (arm64-apple-darwin23)
+...
+----------------
+/bin/sh
+```
+
 
 ### Editing content
 
