@@ -10,7 +10,8 @@
 }:
 let
   docs-site = import ./docs-site { pkgs = sysPkgs; };
-  tools = import ./cli-tools { pkgs = sysPkgs; };
+  scripts = import ./scripts { pkgs = sysPkgs; };
+  tools = import ./cli-tools { pkgs = sysPkgs; inherit scripts; };
 in rec {
   packages.${system} = {
     default = tools.dev-shell;
