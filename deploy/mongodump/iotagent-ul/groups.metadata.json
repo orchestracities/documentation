@@ -1,0 +1,1 @@
+{"options":{},"indexes":[{"v":1,"key":{"_id":1},"name":"_id_","ns":"iotagent-ul.groups"},{"v":1,"unique":true,"key":{"apikey":1,"resource":1},"name":"apikey_1_resource_1","ns":"iotagent-ul.groups","background":true}]}
